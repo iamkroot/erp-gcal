@@ -28,6 +28,7 @@
 *.pyc
 *.sublime-project
 *.sublime-workspace
+*.ini
 *.bak
 
 # OS generated files #

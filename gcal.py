@@ -68,7 +68,6 @@ def all_events(callback, **kwargs):
     while True:
         events = service.events().list(calendarId='primary',
                                        pageToken=page_token).execute()
-        print(events['items'])
         for event in events['items']:
             if not event.get('summary'):
                 print(event)

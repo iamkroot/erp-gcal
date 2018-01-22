@@ -24,12 +24,12 @@ def get_section(sec_num, sections):
     return gcal.parse_section(section)
 
 
-def get_course(course_code, sec_nums):
+def get_course(course_code, secs):
     courses_data = utils.read_json('timetable.json')
     course = courses_data.get(course_code)
     if not course:
         return
-    sections = [get_section(num, course['sections']) for num in sec_nums]
+    sections = [get_section(num, course['sections']) for num in secs.values()]
     return {
         'code': course_code,
         'name': course['name'],
@@ -99,8 +99,8 @@ def make_compre_event(course):
 
 def main():
     service = gcal.create_cal_serv()
-    for erp_data in erp.get_reg_sections().items():
-        course = get_course(*erp_data)
+    for course, sections in erp.get_reg_sections().items():
+        course = get_course(course, sections)
         for section_event in make_section_events(course):
             gcal.create_event(section_event, service)
         compre_event = make_compre_event(course)
@@ -109,16 +109,5 @@ def main():
 
 
 if __name__ == '__main__':
-    # config = utils.get_config()
-    # service = gcal.create_cal_serv()
-    # gcal.all_events(gcal.delete_event)
+    gcal.all_events(gcal.delete_event)
     main()
-    # gcal.all_events(lambda x,y: print(x))
-    # a = {'A': '123', 'Gdsf': 'TERWR'}
-    # for k, v in a.items():
-    #     print(f'{k}={v}')
-    #     print("=".join(k, v))
-    # print(get_course('MATH F112', ['L2']))
-    # all_events(delete_event)
-    # for course in erp.get_reg_sections():
-    #     make_event(course, service)

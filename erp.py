@@ -63,13 +63,24 @@ def parse_tt(week):
             course_code = f'{m[1]} {m[2]}'
             courses.setdefault(course_code, set())
             courses[course_code].add(m[3])
+    for course, secs in courses.items():
+        sections = {sec[0]: sec for sec in secs}
+        yield (course, sections)
+    return
+
+
+def override(courses):
+    for course, sections in utils.get_config()['OVERRIDES'].items():
+        for section in sections.split(', '):
+            courses[course.upper()][section[0]] = section
     return courses
 
 
 def get_reg_sections():
     config = utils.get_config()
     login(**config['ERP_CREDS'])
-    return parse_tt(get_weekly_sched())
+    courses = {c: s for c, s in parse_tt(get_weekly_sched())}
+    return override(courses)
 
 
 if __name__ == '__main__':
