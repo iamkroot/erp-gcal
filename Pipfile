@@ -4,8 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+openpyxl = "*"
+requests = "*"
+"beautifulsoup4" = "*"
+"httplib2" = "*"
+google-api-python-client = "*"
+"oauth2client" = "*"
 
 [dev-packages]
-
-[requires]
-python_version = "3.6"

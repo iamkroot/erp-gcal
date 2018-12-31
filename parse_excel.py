@@ -1,6 +1,7 @@
 from openpyxl import load_workbook
 import json
 import re
+from pathlib import Path
 
 
 def title_except(s, exceptions=['I', 'II', 'III', 'IV']):
@@ -12,7 +13,7 @@ def title_except(s, exceptions=['I', 'II', 'III', 'IV']):
     return " ".join(final)
 
 
-TOP_LEFT_CELL = 'A3'
+TOP_LEFT_CELL = 'A2'
 LAST_COL = 'M'
 ROWS = {  # 0 indexed column indices
     'C_NUM': 1,
@@ -73,11 +74,11 @@ def parse(sheet):
 
 
 def main():
-    file = 'TT/Draft Timetable 2018 - 19 I Sem.xlsx'
+    file = Path('TT/TIMETABLE 2ND SEM 2018-19.xlsx')
     sheet = load_workbook(filename=file).active
     course_db = parse(sheet)
 
-    with open(f'{file}.json', 'w') as f:
+    with open(file.with_suffix('.json'), 'w') as f:
         f.write(json.dumps(course_db, indent=4))
 
 

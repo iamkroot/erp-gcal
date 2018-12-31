@@ -1,9 +1,8 @@
 import httplib2
 import os
 
-from apiclient import discovery
-from oauth2client import client
-from oauth2client import tools
+from apiclient.discovery import build
+from oauth2client import client, tools
 from oauth2client.file import Storage
 from datetime import datetime as dt, timedelta as td, time, date, tzinfo
 import bisect
@@ -43,7 +42,7 @@ def get_credentials():
 def create_cal_serv():
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
-    return discovery.build('calendar', 'v3', http=http)
+    return build('calendar', 'v3', http=http)
 
 
 def delete_event(event, service, **kwargs):
@@ -62,7 +61,7 @@ def patch_event(event, service, data, **kwargs):
                            eventId=event['id'], body=data).execute()
 
 
-def all_events(callback, **kwargs):
+def all_events(callback, kwargs):
     page_token = None
     service = create_cal_serv()
     while True:
@@ -84,9 +83,9 @@ class IST(tzinfo):
         return td(hours=5, minutes=30)
 
 
-def calc_start_date(wdays):
+def calc_start_date(wdays, skip_today=False):
     today = dt.today()
-    if today.isoweekday() in wdays:
+    if not skip_today and today.isoweekday() in wdays:
         return today
     lower = bisect.bisect(wdays, today.isoweekday())
     return today + td(
@@ -100,14 +99,28 @@ def get_last_date():
 
 
 def parse_times(hours):
-    hours = hours.split()
-    start_times = [time(hour=h) for h in range(7, 18)]
-    start = start_times[int(hours[0])]
+    while ' ' in hours:
+        hours = hours.replace(' ', '')
+    start = time(hour=int(hours[0]) + 7)
     return (start, start.replace(hour=start.hour + len(hours) - 1, minute=50))
 
 
 def combine(e_date, e_time):
     return dt.combine(e_date, e_time, IST())
+
+
+def parse_section(section):
+    weekdays = [WEEK.index(day) + 1 for day in section['days'].split()]
+    times = parse_times(section['hours'])
+    start_date = calc_start_date(weekdays, times[1] < dt.now().time())
+    return {
+        'num': section['num'],
+        'instructors': ', '.join(section['instructors']),
+        'room': section['room'],
+        'start': combine(start_date, times[0]),
+        'end': combine(start_date, times[1]),
+        'wdays': weekdays
+    }
 
 
 def parse_compre(compre):
@@ -122,25 +135,8 @@ def parse_compre(compre):
     def comb(hour):
         return combine(compre_date, time(hour=hour))
 
-    sessions = {
-        'FN': {'start': comb(9), 'end': comb(12)},
-        'AN': {'start': comb(14), 'end': comb(17)}
-    }
-    return {key: sessions[compre['session']][key] for key in ['start', 'end']}
-
-
-def parse_section(section):
-    weekdays = [WEEK.index(day) + 1 for day in section['days'].split()]
-    start_date = calc_start_date(weekdays)
-    times = parse_times(section['hours'])
-    return {
-        'num': section['num'],
-        'instructors': ', '.join(section['instructors']),
-        'room': section['room'],
-        'start': combine(start_date, times[0]),
-        'end': combine(start_date, times[1]),
-        'wdays': weekdays
-    }
+    start = 9 if compre['session'] == 'FN' else 14
+    return {'start': comb(start), 'end': comb(start + 3)}
 
 
 if __name__ == '__main__':

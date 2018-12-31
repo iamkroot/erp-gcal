@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 sess = requests.Session()
-moodle_url = 'http://id.bits-hyderabad.ac.in/moodle/'
+moodle_url = 'https://id.bits-hyderabad.ac.in/moodle/'
 
 
 def post_form(src, form_id, post_data=None):

@@ -9,7 +9,7 @@ ADDRESS = utils.get_config()['ERP_URL']['address']
 
 
 def login(username, password):
-    login_url = f'http://{ADDRESS}/psp/hcsprod/?cmd=login&languageCd=ENG'
+    login_url = f'https://{ADDRESS}/psp/hcsprod/?cmd=login&languageCd=ENG'
     payload = {'userid': username, 'pwd': password}
     r = sess.post(login_url, data=payload)
     if r.url[-1] == 'T':
@@ -44,7 +44,7 @@ def get_weekly_sched(start_date=None):
         'DERIVED_CLASS_S_START_DT': start_date,
         'DERIVED_CLASS_S_MEETING_TIME_END': '4:00PM',
         'DERIVED_CLASS_S_SUNDAY_LBL': 'N',
-        'ICAction': 'DERIVED_CLASS_S_SSR_REFRESH_CAL'
+        'ICAction': 'DERIVED_CLASS_S_SSR_NEXT_WEEK'
     }
     response = post_form(r, post_data=payload, form_url=r.url)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -66,7 +66,6 @@ def parse_tt(week):
     for course, secs in courses.items():
         sections = {sec[0]: sec for sec in secs}
         yield (course, sections)
-    return
 
 
 def override(courses):
