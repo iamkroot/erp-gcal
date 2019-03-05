@@ -1,20 +1,62 @@
 import cms
 import erp
 import gcal
-import utils
+from utils import config, read_json
 
-courses_data = utils.read_json('TT/TIMETABLE 2ND SEM 2018-19.json')
+courses_data = read_json('TT/TIMETABLE 2ND SEM 2018-19.json')
+
+
+def whitelist_sections(orig_sections):
+    whitelist = config['COURSES'].get('whitelist')
+    if not whitelist:
+        return orig_sections
+    sections = {}
+    for course_code, sec_types in whitelist.items():
+        course = orig_sections.get(course_code)
+        if not course:
+            print("Unknown course in whitelist:", course_code)
+            continue
+        if sec_types == "all":
+            sections[course_code] = course
+        elif isinstance(sec_types, list):
+            sections[course_code] = {
+                sec_type: course[sec_type] for sec_type in sec_types}
+        else:
+            print("Invalid section for {course_code} in whitelist:", sec_types)
+    return sections
+
+
+def override_sections(sections):
+    overrides = config['COURSES'].get('overrides')
+    if not overrides:
+        return sections
+    for course_code, course_sections in overrides.items():
+        course = sections.get(course_code)
+        if not course:
+            print("Unknown course in overrides:", course_code)
+            continue
+        for sec_code, sec in course_sections.items():
+            if sec_code not in course:
+                print(f"Unknown section in overrides of {course_code}:", sec)
+                continue
+            course[sec_code] = sec
+    return sections
+
+
+def get_sections():
+    reg_sections = erp.get_reg_sections()
+    return override_sections(whitelist_sections(reg_sections))
 
 
 def enrol_all(courses):
-    cms.login_google(**utils.get_config()['CMS_CREDS'])
     for course_code, sections in courses.items():
         for sec_code in sections.values():
             print(course_code, sec_code)
-            general_sec_id = cms.course_search(f"{course_code} {sec_code[0]}")
-            cms.course_enrol(general_sec_id)
-            section_id = cms.course_search(f"{course_code} {sec_code}")
-            cms.course_enrol(section_id)
+            general_section = cms.search_course(f"{course_code} {sec_code[0]}")
+            if general_section:
+                cms.enrol(general_section['id'])
+            section = cms.search_course(f"{course_code} {sec_code}")
+            print(cms.enrol(section['id']))
 
 
 def get_section(sec_num, sections):
@@ -22,7 +64,7 @@ def get_section(sec_num, sections):
     if not section:
         if all([sec_code[0] == 'L' for sec_code in sections.keys()]):
             section = sections.get('L' + sec_num[1:])
-        elif not section:
+        if not section:
             print(f'No section {sec_num} found.')
             return
     section['num'] = sec_num
@@ -43,7 +85,7 @@ def get_course(course_code, secs):
 
 
 WEEK = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA']
-LAST_DATE = gcal.get_last_date().strftime('%Y%m%d')
+LAST_DATE = config['DATES']['last_date'].strftime('%Y%m%d')
 COLORS = {'event': {'L': '9', 'P': '6', 'T': '10'}, 'compre': '11'}
 
 
@@ -101,19 +143,14 @@ def make_compre_event(course):
     }
 
 
-def specific_courses(courses={}):
-    for course_code, sections in reg_sections.items():
-        sections.update(courses.get(course_code, {}))
-        yield course_code, sections
-
 def is_event(event, service, summary):
     if summary in event['summary']:
         print(event)
 
+
 def main():
     service = gcal.create_cal_serv()
-    courses = {'CS F222': {'T': 'T3'}}
-    for course_code, sections in specific_courses(courses):
+    for course_code, sections in get_sections().items():
         course = get_course(course_code, sections)
         for section_event in make_section_events(course):
             gcal.create_event(section_event, service)
@@ -123,9 +160,4 @@ def main():
 
 
 if __name__ == '__main__':
-    # gcal.all_events(gcal.delete_event)
-    # print(dict(specific_courses({'CS F111': {'T': 'T2', 'L': 'L1'}})))
-    # enrol_all(erp.get_reg_sections())
-    gcal.all_events(is_event, {'summary': 'Discrete'})
-    # gcal.all_events(lambda a, b: print(a))
-    # main()
+    main()
