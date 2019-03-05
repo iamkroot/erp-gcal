@@ -1,15 +1,16 @@
 import requests
 from bs4 import BeautifulSoup
 import re
-import utils
+from utils import config, retry_on_conn_error, get_weekday
 
 sess = requests.Session()
 
-ADDRESS = utils.get_config()['ERP_URL']['address']
+ADDRESS = config['ERP']['address']
 
 
+@retry_on_conn_error
 def login(username, password):
-    login_url = f'https://{ADDRESS}/psp/hcsprod/?cmd=login&languageCd=ENG'
+    login_url = f'http://{ADDRESS}/psp/hcsprod/?cmd=login&languageCd=ENG'
     payload = {'userid': username, 'pwd': password}
     r = sess.post(login_url, data=payload)
     if r.url[-1] == 'T':
@@ -36,7 +37,7 @@ def post_form(src, **kwargs):
 
 def get_weekly_sched(start_date=None):
     if not start_date:
-        start_date = utils.get_weekday(1).strftime('%d/%m/%Y')
+        start_date = get_weekday(1).strftime('%d/%m/%Y')
     url = (f'http://{ADDRESS}/psc/hcsprod/EMPLOYEE/HRMS/c/'
            'SA_LEARNER_SERVICES.SSR_SSENRL_SCHD_W.GBL')
     r = sess.get(url)
@@ -68,18 +69,9 @@ def parse_tt(week):
         yield (course, sections)
 
 
-def override(courses):
-    for course, sections in utils.get_config()['OVERRIDES'].items():
-        for section in sections.split(', '):
-            courses[course.upper()][section[0]] = section
-    return courses
-
-
 def get_reg_sections():
-    config = utils.get_config()
-    login(**config['ERP_CREDS'])
-    courses = {c: s for c, s in parse_tt(get_weekly_sched())}
-    return override(courses)
+    login(**config['ERP']['CREDS'])
+    return dict(parse_tt(get_weekly_sched()))
 
 
 if __name__ == '__main__':
