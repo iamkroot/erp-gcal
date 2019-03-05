@@ -1,0 +1,19 @@
+[ERP]
+address = "10.2.102.21:9000"
+
+[ERP.CREDS]
+username = "41120170069"
+password = "password"
+
+[MOODLE]
+address = "td.bits-hyderabad.ac.in"
+wstoken = ""  # Copy Moodle Mobile Web Service Key from Preferences/Security Keys
+
+[DATES]
+last_date = 2019-04-30
+midsem.start = 2019-03-11
+midsem.end = 2019-03-17
+
+[COURSES]
+whitelist = {"IS F341" = ["L", "P"], "CS F211" = ["P"]}  # only these courses will be processed in calendar. Set as {} to process all.
+overrides = {"IS F341" = {"L" = "L1", "P" = "P2"}}  # should only contain courses inside whitelist if defined
