@@ -51,3 +51,7 @@ def retry_on_conn_error(func, max_retries=5):
             print("Connection Error! Maximum retries exceeded.")
             quit()
     return wrapper
+
+
+def pprint_json(data):
+    print(json.dumps(data, indent=4))
