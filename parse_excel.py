@@ -9,75 +9,75 @@ def title_except(s, exceptions=['I', 'II', 'III', 'IV']):
     word_list = re.split(' ', s)
     final = [word_list[0].capitalize()]
     for word in word_list[1:]:
-        final.append(word if word in exceptions else word.capitalize())
+        if not word:
+            continue
+        if word.lower() in ('and', 'of', 'in', 'to', 'its'):
+            print(word)
+            word = word.lower()
+        elif word not in exceptions:
+            word = word.capitalize()
+        final.append(word)
     return " ".join(final)
 
 
-TOP_LEFT_CELL = 'A2'
-LAST_COL = 'M'
 ROWS = {  # 0 indexed column indices
-    'C_NUM': 1,
-    'C_TITLE': 2,
-    'SEC_NUM': 6,
-    'INSTR_NAME': 7,
-    'ROOM': 8,
-    'DAYS': 9,
-    'HOURS': 10,
-    'COMPRE': 12
+    'c_num': 1,
+    'c_title': 2,
+    'sec_num': 6,
+    'instr_name': 7,
+    'room': 8,
+    'days': 9,
+    'hours': 10,
+    'compre': 12
 }
 
 
 def parse(sheet):
-    req_area = sheet[TOP_LEFT_CELL: LAST_COL + str(sheet.max_row)]
     course_db = {}
-
-    for row in req_area:
-        if not row[ROWS['INSTR_NAME']].value:
+    for row in sheet:
+        data = {name: row[num].value for name, num in ROWS.items()}
+        if not data['instr_name']:
             continue  # blank row
-
         # new Course
-        if row[ROWS['C_NUM']].value:
-            compre = row[ROWS['COMPRE']].value
+        if data['c_num']:
+            compre = data['compre']
+            compre = compre.split() if compre else (None, None)
             course = {
-                'name': title_except(row[ROWS['C_TITLE']].value),
+                'name': title_except(data['c_title']),
                 'sections': {},
                 'compre': {
-                    'date': compre.split()[0] if compre else None,
-                    'session': compre.split()[1] if compre else None
+                    'date': compre[0],
+                    'session': compre[1]
                 }
             }
-            course_db[row[ROWS['C_NUM']].value] = course  # add to course
+            course_db[data['c_num']] = course  # add to course
             sec_type = 'L'
             sec_num_counter = 1
 
         # new Tutorial or Practical section
-        if not row[ROWS['C_NUM']].value and row[ROWS['C_TITLE']].value:
-            sec_type = row[ROWS['C_TITLE']].value[0]
+        if not data['c_num'] and data['c_title']:
+            sec_type = data['c_title'][0]
             sec_num_counter = 1
 
         # new Section
-        if (row[ROWS['INSTR_NAME']].value and row[ROWS['ROOM']].value) or \
-                row[ROWS['C_TITLE']].value:
-            sec_num = row[ROWS['SEC_NUM']].value or sec_num_counter
-            section = {
-                'instructors': []
-            }
+        if (data['instr_name'] and data['room']) or \
+                data['c_title']:
+            sec_num = data['sec_num'] or sec_num_counter
+            section = {'instructors': []}
             course['sections'][sec_type + str(sec_num)] = section
             sec_num_counter += 1
 
-        for ind, key in enumerate(['room', 'days', 'hours'], ROWS['ROOM']):
-            if key not in section:
-                section[key] = str(row[ind].value) if row[ind].value else None
-
-        section['instructors'].append(row[ROWS['INSTR_NAME']].value)
+        for key in ('room', 'days', 'hours'):
+            section.setdefault(key, data[key] and str(data[key]))
+        section['instructors'].append(data['instr_name'])
     return course_db
 
 
 def main():
     file = Path('TT/TIMETABLE 2ND SEM 2018-19.xlsx')
     sheet = load_workbook(filename=file).active
+    sheet.delete_rows(0)  # delete header row
     course_db = parse(sheet)
-
     with open(file.with_suffix('.json'), 'w') as f:
         f.write(json.dumps(course_db, indent=4))
 
