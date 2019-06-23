@@ -11,5 +11,7 @@ requests = "*"
 google-api-python-client = "*"
 "oauth2client" = "*"
 toml = "*"
+google-auth-httplib2 = "*"
+google-auth-oauthlib = "*"
 
 [dev-packages]
