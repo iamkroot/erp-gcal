@@ -1,22 +1,7 @@
-from openpyxl import load_workbook
 import json
-import re
 from pathlib import Path
-
-
-def title_except(s, exceptions=['I', 'II', 'III', 'IV']):
-    """Convert string to Title Case"""
-    word_list = re.split(' ', s)
-    final = [word_list[0].capitalize()]
-    for word in word_list[1:]:
-        if not word:
-            continue
-        if word.lower() in ('and', 'of', 'in', 'to', 'its'):
-            word = word.lower()
-        elif word not in exceptions:
-            word = word.capitalize()
-        final.append(word)
-    return " ".join(final)
+from openpyxl import load_workbook
+from utils import to_title
 
 
 ROWS = {  # 0 indexed column indices
@@ -32,7 +17,7 @@ ROWS = {  # 0 indexed column indices
 
 
 def parse(wb):
-    course_db = {}
+    course_db = []
     for sheet in wb:
         rows = sheet.rows
         next(rows)  # skip header row
@@ -44,17 +29,15 @@ def parse(wb):
                 continue  # blank row
             # new Course
             if data['c_num']:
-                compre = data['compre']
-                compre = compre.split() if compre else (None, None)
                 course = {
-                    'name': title_except(data['c_title']),
-                    'sections': {},
-                    'compre': {
-                        'date': compre[0],
-                        'session': compre[1]
-                    }
+                    'code': data['c_num'],
+                    'name': to_title(data['c_title']),
+                    'sections': [],
                 }
-                course_db[data['c_num']] = course  # add to course
+                if data['compre']:
+                    date, sess = data['compre'].split()
+                    course['compre'] = {'date': date, 'session': sess}
+                course_db.append(course)  # add to course
                 sec_type = 'L'
                 sec_num_counter = 1
 
@@ -64,18 +47,33 @@ def parse(wb):
                 sec_num_counter = 1
 
             # new Section
-            if (data['instr_name'] and data['room']) or \
-                    data['c_title']:
+            if (data['instr_name'] and data['room'] and not sec_type == 'L' or
+                    data['sec_num']) or data['c_title']:
                 sec_num = int(data['sec_num'] or sec_num_counter)
-                section = {'instructors': []}
-                course['sections'][sec_type + str(sec_num)] = section
+                section = {
+                    'type': sec_type,
+                    'num': sec_num,
+                    'instructors': [],
+                    'sched': []
+                }
+                course['sections'].append(section)
                 sec_num_counter += 1
+                instructors = set()  # keep track of unique instructors
 
-            for key in ('room', 'days', 'hours'):
-                section.setdefault(key, data[key])
-            if isinstance(section.get('hours'), float):
-                section['hours'] = str(int(section['hours']))
-            section['instructors'].append(data['instr_name'])
+            if isinstance(data.get('hours'), (float, int)):
+                data['hours'] = str(int(data['hours']))
+            if data.get('days'):
+                hours = tuple(map(int, data['hours'].split()))
+                days = data['days'].split()
+                sched = {'room': data['room'], 'days': days}
+                if len(hours) == hours[-1] - hours[0] + 1:  # continuous hours
+                    section['sched'].append(dict(**sched, hours=hours))
+                else:
+                    for hour in hours:  # separate sched for each hour
+                        section['sched'].append(dict(**sched, hours=(hour,)))
+            if data['instr_name'].lower() not in instructors:
+                section['instructors'].append(data['instr_name'])
+                instructors.add(data['instr_name'].lower())
     return course_db
 
 

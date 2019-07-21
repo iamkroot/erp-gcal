@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import date, timedelta
 import requests
 import toml
@@ -55,3 +56,18 @@ def retry_on_conn_error(func, max_retries=5):
 
 def pprint_json(data):
     print(json.dumps(data, indent=4))
+
+
+def to_title(s, exceptions=('I', 'II', 'III', 'IV')):
+    """Convert string to Title Case"""
+    word_list = re.split(' ', s)
+    final = [word_list[0].capitalize()]
+    for word in word_list[1:]:
+        if not word:
+            continue
+        if word.lower() in ('and', 'of', 'in', 'to', 'its'):
+            word = word.lower()
+        elif word not in exceptions:
+            word = word.capitalize()
+        final.append(word)
+    return " ".join(final)
