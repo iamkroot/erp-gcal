@@ -16,12 +16,12 @@
     "default": {
         "beautifulsoup4": {
             "hashes": [
-                "sha256:034740f6cb549b4e932ae1ab975581e6103ac8f942200a0e9759065984391858",
-                "sha256:945065979fb8529dd2f37dbb58f00b661bdbcbebf954f93b32fdf5263ef35348",
-                "sha256:ba6d5c59906a85ac23dadfe5c88deaf3e179ef565f4898671253e50a78680718"
+                "sha256:05668158c7b85b791c5abde53e50265e16f98ad601c402ba44d70f96c4159612",
+                "sha256:25288c9e176f354bf277c0a10aa96c782a6a18a17122dba2e8cec4a97e03343b",
+                "sha256:f040590be10520f2ea4c2ae8c3dae441c7cfff5308ec9d58a0ec0c1b8f81d469"
             ],
             "index": "pypi",
-            "version": "==4.7.1"
+            "version": "==4.8.0"
         },
         "cachetools": {
             "hashes": [
@@ -52,11 +52,11 @@
         },
         "google-api-python-client": {
             "hashes": [
-                "sha256:048da0d68564380ee23b449e5a67d4666af1b3b536d2fb0a02cee1ad540fa5ec",
-                "sha256:5def5a485b1cbc998b8f869456c7bde0c0e6d3d0a5ea1f300b5ef57cb4b1ce8f"
+                "sha256:2e55a5c7b56233c68945b6804c73e253445933f4d485d4e69e321b38772b9dd6",
+                "sha256:60f2ac2f27997d9af10ae126d9937b7d8c1fd061d12668ccaf94b4347ee85021"
             ],
             "index": "pypi",
-            "version": "==1.7.9"
+            "version": "==1.7.10"
         },
         "google-auth": {
             "hashes": [
@@ -83,11 +83,11 @@
         },
         "httplib2": {
             "hashes": [
-                "sha256:158fbd0ffbba536829d664bf3f32c4f45df41f8f791663665162dfaf21ffd075",
-                "sha256:d1146939d270f1f1eb8cbf8f5aa72ff37d897faccca448582bb1e180aeb4c6b2"
+                "sha256:6901c8c0ffcf721f9ce270ad86da37bc2b4d32b8802d4a9cec38274898a64044",
+                "sha256:cf6f9d5876d796539ec922a2c9b9a7cad9bfd90f04badcdc3bcfa537168052c3"
             ],
             "index": "pypi",
-            "version": "==0.13.0"
+            "version": "==0.13.1"
         },
         "idna": {
             "hashes": [
@@ -113,10 +113,10 @@
         },
         "oauthlib": {
             "hashes": [
-                "sha256:0ce32c5d989a1827e3f1148f98b9085ed2370fc939bf524c9c851d8714797298",
-                "sha256:3e1e14f6cde7e5475128d30e97edc3bfb4dc857cb884d8714ec161fdbb3b358e"
+                "sha256:40a63637707e9163eda62d0f5345120c65e001a790480b8256448543c1f78f66",
+                "sha256:b4d99ae8ccfb7d33ba9591b59355c64eef5241534aa3da2e4c0435346b84bc8e"
             ],
-            "version": "==3.0.1"
+            "version": "==3.0.2"
         },
         "openpyxl": {
             "hashes": [
@@ -170,10 +170,10 @@
         },
         "soupsieve": {
             "hashes": [
-                "sha256:6898e82ecb03772a0d82bd0d0a10c0d6dcc342f77e0701d0ec4a8271be465ece",
-                "sha256:b20eff5e564529711544066d7dc0f7661df41232ae263619dede5059799cdfca"
+                "sha256:72b5f1aea9101cf720a36bb2327ede866fd6f1a07b1e87c92a1cc18113cbc946",
+                "sha256:e4e9c053d59795e440163733a7fec6c5972210e1790c507e4c7b051d6c5259de"
             ],
-            "version": "==1.9.1"
+            "version": "==1.9.2"
         },
         "toml": {
             "hashes": [
