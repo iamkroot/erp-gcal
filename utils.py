@@ -32,6 +32,11 @@ def read_json(path):
         quit()
 
 
+def write_json(file, data):
+    with open(file, 'w') as f:
+        json.dump(data, f, indent=4)
+
+
 def get_weekday(isoweekday):
     today = date.today()
     return today - timedelta(days=today.weekday() + isoweekday - 1)

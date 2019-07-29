@@ -1,7 +1,6 @@
-import json
 from pathlib import Path
 from openpyxl import load_workbook
-from utils import to_title
+from utils import to_title, config, read_json, write_json
 
 
 ROWS = {  # 0 indexed column indices
@@ -16,8 +15,8 @@ ROWS = {  # 0 indexed column indices
 }
 
 
-def parse(wb):
-    course_db = []
+def parse_wb(wb):
+    course_db = {}
     for sheet in wb:
         rows = sheet.rows
         next(rows)  # skip header row
@@ -30,14 +29,13 @@ def parse(wb):
             # new Course
             if data['c_num']:
                 course = {
-                    'code': data['c_num'],
                     'name': to_title(data['c_title']),
-                    'sections': [],
+                    'sections': {},
                 }
                 if data['compre']:
                     date, sess = data['compre'].split()
                     course['compre'] = {'date': date, 'session': sess}
-                course_db.append(course)  # add to course
+                course_db[data['c_num']] = course  # add to course
                 sec_type = 'L'
                 sec_num_counter = 1
 
@@ -51,12 +49,10 @@ def parse(wb):
                     data['sec_num']) or data['c_title']:
                 sec_num = int(data['sec_num'] or sec_num_counter)
                 section = {
-                    'type': sec_type,
-                    'num': sec_num,
                     'instructors': [],
                     'sched': []
                 }
-                course['sections'].append(section)
+                course['sections'][sec_type + str(sec_num)] = section
                 sec_num_counter += 1
                 instructors = set()  # keep track of unique instructors
 
@@ -77,13 +73,24 @@ def parse(wb):
     return course_db
 
 
-def main():
-    file = Path('TT/TIMETABLE 1ST SEM 2019-20.xlsx')
+def parse_excel(file: Path):
     wb = load_workbook(filename=file, read_only=True)
+    return parse_wb(wb)
 
-    course_db = parse(wb)
-    with open(file.with_suffix('.json'), 'w') as f:
-        f.write(json.dumps(course_db, indent=4))
+
+def get_course_db(tt_file=Path(config['COURSES']['tt_file'])):
+    json_file = tt_file.with_suffix('.json')
+    if not json_file.exists():
+        course_db = parse_excel(tt_file)
+        write_json(json_file, course_db)
+    else:
+        course_db = read_json(json_file)
+    return course_db
+
+
+def main():
+    tt_file = Path(config['COURSES']['tt_file'])
+    write_json(tt_file.with_suffix('.json'), parse_excel(tt_file))
 
 
 if __name__ == '__main__':

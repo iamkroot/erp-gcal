@@ -16,19 +16,19 @@ def make_req(verb, params={}, data=None):
     return requests.request(verb, REST_URL, params=query_params, data=data)
 
 
-def get_query(wsfunc, params={}):
+def get(wsfunc, params={}):
     params['wsfunction'] = wsfunc
     return make_req('get', params)
 
 
-def post_query(wsfunc, params={}, data={}):
+def post(wsfunc, params={}, data={}):
     params['wsfunction'] = wsfunc
     return make_req('post', params, data)
 
 
 @lru_cache()
 def get_siteinfo():
-    r = get_query('core_webservice_get_site_info')
+    r = get('core_webservice_get_site_info')
     return r.json()
 
 
@@ -38,20 +38,20 @@ def get_userid():
 
 
 def get_enrolled_courses():
-    r = get_query('core_enrol_get_users_courses', {'userid': get_userid()})
+    r = get('core_enrol_get_users_courses', {'userid': get_userid()})
     return r.json()
 
 
 def search_course(name):
-    r = get_query('core_course_search_courses',
-                  {'criterianame': 'search', 'criteriavalue': name})
+    r = get('core_course_search_courses',
+            {'criterianame': 'search', 'criteriavalue': name})
     data = r.json()
     if data['total']:
         return data['courses'][0]
 
 
 def enrol(courseid):
-    r = post_query('enrol_self_enrol_user', data={'courseid': courseid})
+    r = post('enrol_self_enrol_user', data={'courseid': courseid})
     return r.json()['status']
 
 

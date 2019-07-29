@@ -1,22 +1,23 @@
+import re
 import requests
 from bs4 import BeautifulSoup
-import re
 from utils import config, retry_on_conn_error, get_weekday
 
 sess = requests.Session()
 
-ADDRESS = config['ERP']['address']
+ROOT_URL = 'https://' + config['ERP']['address']
 
 
 @retry_on_conn_error
 def login(username, password):
-    login_url = f'http://{ADDRESS}/psp/hcsprod/?cmd=login&languageCd=ENG'
+    login_url = ROOT_URL + '/psp/hcsprod/?cmd=login&languageCd=ENG'
     payload = {'userid': username, 'pwd': password}
     r = sess.post(login_url, data=payload)
     if r.url[-1] == 'T':
         print('Logged in to ERP.')
     else:
         print('Login unsuccessful for ERP.')
+        exit()
 
 
 def post_form(src, **kwargs):
@@ -35,14 +36,12 @@ def post_form(src, **kwargs):
     return sess.post(form_url, payload)
 
 
-def get_weekly_sched(start_date=None):
-    if not start_date:
-        start_date = get_weekday(1).strftime('%d/%m/%Y')
-    url = (f'http://{ADDRESS}/psc/hcsprod/EMPLOYEE/HRMS/c/'
+def get_weekly_sched(start_date=get_weekday(1)):
+    url = (ROOT_URL + '/psc/hcsprod/EMPLOYEE/HRMS/c/'
            'SA_LEARNER_SERVICES.SSR_SSENRL_SCHD_W.GBL')
     r = sess.get(url)
     payload = {
-        'DERIVED_CLASS_S_START_DT': start_date,
+        'DERIVED_CLASS_S_START_DT': start_date.strftime('%d/%m/%Y'),
         'DERIVED_CLASS_S_MEETING_TIME_END': '4:00PM',
         'DERIVED_CLASS_S_SUNDAY_LBL': 'N',
         'ICAction': 'DERIVED_CLASS_S_SSR_NEXT_WEEK'
@@ -64,14 +63,12 @@ def parse_tt(week):
             course_code = f'{m[1]} {m[2]}'
             courses.setdefault(course_code, set())
             courses[course_code].add(m[3])
-    for course, secs in courses.items():
-        sections = {sec[0]: sec for sec in secs}
-        yield (course, sections)
+    return courses
 
 
 def get_reg_sections():
     login(**config['ERP']['CREDS'])
-    return dict(parse_tt(get_weekly_sched()))
+    return parse_tt(get_weekly_sched())
 
 
 if __name__ == '__main__':

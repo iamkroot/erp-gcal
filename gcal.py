@@ -4,25 +4,13 @@ import os
 from apiclient.discovery import build
 from oauth2client import client, tools
 from oauth2client.file import Storage
-from datetime import datetime as dt, timedelta as td, time, date, tzinfo
-import bisect
-import utils
 
 SCOPES = 'https://www.googleapis.com/auth/calendar'
 CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'Timetable for BPHC'
-WEEK = ['M', 'T', 'W', 'Th', 'F', 'S']
 
 
 def get_credentials():
-    """Gets valid user credentials from storage.
-
-    If nothing has been stored, or if the stored credentials are invalid,
-    the OAuth2 flow is completed to obtain the new credentials.
-
-    Returns:
-        Credentials, the obtained credential.
-    """
     home_dir = os.path.expanduser('~')
     credential_dir = os.path.join(home_dir, '.credentials')
     if not os.path.exists(credential_dir):
@@ -61,83 +49,22 @@ def patch_event(event, service, data, **kwargs):
                            eventId=event['id'], body=data).execute()
 
 
-def all_events(callback, kwargs):
+def print_event(event, *args, **kwargs):
+    print(event.get('summary', event))
+
+
+def all_events(service, callback, **kwargs):
     page_token = None
-    service = create_cal_serv()
     while True:
         events = service.events().list(calendarId='primary',
                                        pageToken=page_token).execute()
         for event in events['items']:
-            if not event.get('summary'):
-                print(event)
-                break
-            print(event['summary'], end=' ')
             callback(event, service, **kwargs)
         page_token = events.get('nextPageToken')
         if not page_token:
             break
 
 
-class IST(tzinfo):
-    def utcoffset(self, dt):
-        return td(hours=5, minutes=30)
-
-
-def calc_start_date(wdays, skip_today=False):
-    today = dt.today()
-    if not skip_today and today.isoweekday() in wdays:
-        return today
-    lower = bisect.bisect(wdays, today.isoweekday())
-    return today + td(
-        days=wdays[lower % len(wdays)] - today.isoweekday(),
-        weeks=(lower == len(wdays))
-    )
-
-
-def get_last_date():
-    return dt.strptime(utils.get_config()['DATES']['last_date'], '%d/%m/%Y')
-
-
-def parse_times(hours):
-    while ' ' in hours:
-        hours = hours.replace(' ', '')
-    start = time(hour=int(hours[0]) + 7)
-    return (start, start.replace(hour=start.hour + len(hours) - 1, minute=50))
-
-
-def combine(e_date, e_time):
-    return dt.combine(e_date, e_time, IST())
-
-
-def parse_section(section):
-    weekdays = [WEEK.index(day) + 1 for day in section['days'].split()]
-    times = parse_times(section['hours'])
-    start_date = calc_start_date(weekdays, times[1] < dt.now().time())
-    return {
-        'num': section['num'],
-        'instructors': ', '.join(section['instructors']),
-        'room': section['room'],
-        'start': combine(start_date, times[0]),
-        'end': combine(start_date, times[1]),
-        'wdays': weekdays
-    }
-
-
-def parse_compre(compre):
-    if not compre['date']:
-        return None
-    dd, mm = map(int, compre['date'].split('/'))
-    today = date.today()
-    compre_date = today.replace(day=dd, month=mm)
-    if today > compre_date:
-        compre_date = compre_date.replace(year=today.year + 1)
-
-    def comb(hour):
-        return combine(compre_date, time(hour=hour))
-
-    start = 9 if compre['session'] == 'FN' else 14
-    return {'start': comb(start), 'end': comb(start + 3)}
-
-
 if __name__ == '__main__':
-    pass
+    service = create_cal_serv()
+    all_events(service, print_event)
