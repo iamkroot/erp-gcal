@@ -11,6 +11,9 @@ class IST(tzinfo):
     def utcoffset(self, dt):
         return td(hours=5, minutes=30)
 
+    def dst(self, dt):
+        return td(0)
+
 
 def combine(e_date, e_time):
     return dt.combine(e_date, e_time, IST())
