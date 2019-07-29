@@ -1,6 +1,7 @@
 from pathlib import Path
 from openpyxl import load_workbook
 from utils import to_title, config, read_json, write_json
+import csv
 
 
 ROWS = {  # 0 indexed column indices
@@ -15,7 +16,22 @@ ROWS = {  # 0 indexed column indices
 }
 
 
-def parse_wb(wb):
+def parse_midsem(file=config['COURSES']['midsem_file']):
+    midsem = {}
+    with open(file) as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if '*' in row['TIME']:
+                continue
+            c_dept, c_num = row['COURSE NO'].strip().split()
+            midsem[c_dept + ' ' + c_num] = {
+                'date': row['DATE(S)'].strip(),
+                'time': row['TIME'].strip()
+            }
+    return midsem
+
+
+def parse_tt(wb):
     course_db = {}
     for sheet in wb:
         rows = sheet.rows
@@ -75,7 +91,11 @@ def parse_wb(wb):
 
 def parse_excel(file: Path):
     wb = load_workbook(filename=file, read_only=True)
-    return parse_wb(wb)
+    course_db = parse_tt(wb)
+    midsem = parse_midsem()
+    for k, v in midsem.items():
+        course_db[k]['midsem'] = v
+    return course_db
 
 
 def get_course_db(tt_file=Path(config['COURSES']['tt_file'])):

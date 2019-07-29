@@ -16,5 +16,6 @@ midsem.end = 2019-03-17
 
 [COURSES]
 tt_file = 'path/to/TIMETABLE 1ST SEM 2019-20.xlsx'
+midsem_file = "TT/midsem TIMETABLE I SEM 2019-20.csv"
 whitelist = {"IS F341" = ["L", "P"], "CS F211" = ["P"]}  # only these courses will be processed in calendar. Set as {} to process all.
 overrides = {"IS F341" = {"L" = "L1", "P" = "P2"}}  # should only contain courses inside whitelist if defined

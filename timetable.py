@@ -1,10 +1,12 @@
 import bisect
+import re
 from datetime import datetime as dt, timedelta as td, time, date, tzinfo
 from functools import partial
 from parse_excel import get_course_db
 
 courses_data = get_course_db()
 ISO_WDAY = {d: i for i, d in enumerate(('M', 'T', 'W', 'Th', 'F', 'S'), 1)}
+MIDSEM_PAT = re.compile(r'(\d{1,2})\.(\d{2}) -- (\d{1,2})\.(\d{2}) (\w{2})')
 
 
 class IST(tzinfo):
@@ -51,14 +53,34 @@ def parse_section(section):
     }
 
 
+def parse_date(raw_date):
+    dd, mm = map(int, raw_date.split('/'))
+    today = date.today()
+    parsed_date = today.replace(day=dd, month=mm)
+    if today > parsed_date:
+        parsed_date = parsed_date.replace(year=today.year + 1)
+    return parsed_date
+
+
+def parse_midsem(midsem):
+    if not midsem:
+        return
+    midsem_date = parse_date(midsem['date'])
+    match = MIDSEM_PAT.match(midsem['time'])
+    is_pm = match.group(5) == 'PM' and match.group(1) != '11'
+    times = tuple(map(int, match.groups()[:-1]))
+    start = time(hour=times[0] + 12 * is_pm, minute=times[1])
+    end = time(hour=times[2] + 12 * is_pm, minute=times[3])
+    return {
+        'start': combine(midsem_date, start),
+        'end': combine(midsem_date, end)
+    }
+
+
 def parse_compre(compre):
     if not compre:
         return
-    dd, mm = map(int, compre['date'].split('/'))
-    today = date.today()
-    compre_date = today.replace(day=dd, month=mm)
-    if today > compre_date:
-        compre_date = compre_date.replace(year=today.year + 1)
+    compre_date = parse_date(compre['date'])
 
     def comb(hour):
         return combine(compre_date, time(hour=hour))
@@ -88,5 +110,6 @@ def get_course(course_code, sel_sections):
         'code': course_code,
         'name': course['name'],
         'sections': tuple(filter(None, map(get_sec_data, sel_sections))),
+        'midsem': parse_midsem(course.get('midsem')),
         'compre': parse_compre(course.get('compre'))
     }
