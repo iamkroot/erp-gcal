@@ -1,6 +1,7 @@
 import cms
 import erp
-import gcal
+from datetime import date
+from gcal import GCal
 from events import make_course_events
 from timetable import get_course
 from utils import config
@@ -56,15 +57,23 @@ def enrol_all(courses):
             print(cms.enrol(section['id']))
 
 
+def get_cal_name():
+    today = date.today()
+    sem = 2 if 1 <= today.month <= 5 else 1
+    year = today.year - sem + 1
+    return f"Timetable Sem {sem}, {year}-{year + 1 - 2000}"
+
+
 def main():
-    service = gcal.create_cal_serv()
     events = []
     for course_code, sections in get_sections().items():
         course = get_course(course_code, sections)
         events.extend(make_course_events(course))
-    print(events)
+    gcal = GCal()
+    gcal.set_cal(get_cal_name())
     for event in events:
-        gcal.create_event(event, service)
+        gcal.create_event(event)
+        print("Created", event['summary'])
 
 
 if __name__ == '__main__':

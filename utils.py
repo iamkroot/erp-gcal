@@ -3,6 +3,7 @@ import re
 from datetime import date, timedelta
 import requests
 import toml
+from difflib import SequenceMatcher
 
 
 def read_toml(path):
@@ -76,3 +77,35 @@ def to_title(s, exceptions=('I', 'II', 'III', 'IV')):
             word = word.capitalize()
         final.append(word)
     return " ".join(final)
+
+
+def fuzzymatch_dicts(target, source, fields=None, thresh=0.8):
+    total = 0
+    num = 0
+    for k, v in target.items():
+        if fields and k not in fields:
+            continue
+        if not isinstance(v, str):
+            continue
+        orig = source.get(k)
+        if not orig:
+            continue
+        matcher = SequenceMatcher(None, v, orig)
+        total += matcher.ratio()
+        num += 1
+    try:
+        ratio = total / num
+        return ratio if ratio >= thresh else 0
+    except ZeroDivisionError:
+        return 0
+
+
+def find_entity(entity, entities, fields):
+    max_ratio = 0
+    best_match = None
+    for e in entities:
+        ratio = fuzzymatch_dicts(entity, e, fields)
+        if max_ratio < ratio:
+            max_ratio = ratio
+            best_match = e
+    return best_match
