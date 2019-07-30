@@ -3,8 +3,7 @@ import requests
 from functools import lru_cache
 from utils import config, pprint_json
 
-MOODLE_URL = f"https://{config['MOODLE']['address']}/moodle"
-REST_URL = MOODLE_URL + "/webservice/rest/server.php"
+REST_URL = config['MOODLE']['address'] + "/webservice/rest/server.php"
 
 
 def make_req(verb, params={}, data=None):
@@ -13,7 +12,11 @@ def make_req(verb, params={}, data=None):
         "moodlewsrestformat": "json",
     }
     query_params.update(params)
-    return requests.request(verb, REST_URL, params=query_params, data=data)
+    resp = requests.request(verb, REST_URL, params=query_params, data=data)
+    resp = resp.json()
+    if 'exception' in resp:
+        raise Exception('CMS error: ' + resp['message'])
+    return resp
 
 
 def get(wsfunc, params={}):
@@ -28,8 +31,7 @@ def post(wsfunc, params={}, data={}):
 
 @lru_cache()
 def get_siteinfo():
-    r = get('core_webservice_get_site_info')
-    return r.json()
+    return get('core_webservice_get_site_info')
 
 
 @lru_cache()
@@ -38,21 +40,18 @@ def get_userid():
 
 
 def get_enrolled_courses():
-    r = get('core_enrol_get_users_courses', {'userid': get_userid()})
-    return r.json()
+    return get('core_enrol_get_users_courses', {'userid': get_userid()})
 
 
 def search_course(name):
-    r = get('core_course_search_courses',
-            {'criterianame': 'search', 'criteriavalue': name})
-    data = r.json()
+    data = get('core_course_search_courses',
+               {'criterianame': 'search', 'criteriavalue': name})
     if data['total']:
         return data['courses'][0]
 
 
 def enrol(courseid):
-    r = post('enrol_self_enrol_user', data={'courseid': courseid})
-    return r.json()['status']
+    return post('enrol_self_enrol_user', data={'courseid': courseid})
 
 
 if __name__ == '__main__':

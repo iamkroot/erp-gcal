@@ -49,12 +49,14 @@ def get_sections():
     return override_sections(whitelist_sections(reg_sections))
 
 
-def enrol_all(courses):
-    for course_code, sections in courses.items():
-        for sec_code in sections:
-            print("Enrolling to", course_code, sec_code)
-            section = cms.search_course(f"{course_code} {sec_code}")
-            print(cms.enrol(section['id']))
+def enrol_cms(course_code, sections):
+    for sec_code in sections:
+        print("Enrolling to", course_code, sec_code)
+        section = cms.search_course(f"{course_code} {sec_code}")
+        resp = cms.enrol(section['id'])
+        if resp.get('status') != 'true':
+            print("error while enrolling")
+            print(resp)
 
 
 def get_cal_name():
@@ -69,6 +71,7 @@ def main():
     for course_code, sections in get_sections().items():
         course = get_course(course_code, sections)
         events.extend(make_course_events(course))
+        enrol_cms(course_code, sections)
     gcal = GCal()
     gcal.set_cal(get_cal_name())
     for event in events:
