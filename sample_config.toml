@@ -1,5 +1,6 @@
 [ERP]
-address = "10.2.102.21:9000"
+address = "http://10.2.102.21:9000"  # intranet
+# address = "https://erp.bits-pilani.ac.in:4431"  # internet
 
 [ERP.CREDS]
 username = "41120170069"

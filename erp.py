@@ -5,7 +5,7 @@ from utils import config, retry_on_conn_error, get_weekday
 
 sess = requests.Session()
 
-ROOT_URL = 'https://' + config['ERP']['address']
+ROOT_URL = config['ERP']['address']
 
 
 @retry_on_conn_error
