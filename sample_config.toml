@@ -11,12 +11,15 @@ address = "https://td.bits-hyderabad.ac.in/moodle"
 wstoken = "368b0c8b11dce69420ca42ef45bdd1dc"  # Copy Moodle Mobile Web Service Key from Preferences -> Security Keys
 
 [DATES]
-last_date = 2019-04-30
-midsem.start = 2019-03-11
-midsem.end = 2019-03-17
+last_date = 2019-11-29  # last working date of the semester
+midsem.start = 2019-09-28  # should be official date, to ensure correct holidays
+midsem.end = 2019-10-05
 
 [COURSES]
-tt_file = 'path/to/TIMETABLE 1ST SEM 2019-20.xlsx'
-midsem_file = "TT/midsem TIMETABLE I SEM 2019-20.csv"
-whitelist = {"IS F341" = ["L", "P"], "CS F211" = ["P"]}  # only these courses will be processed in calendar. Set as {} to process all.
-overrides = {"IS F341" = {"L" = "L1", "P" = "P2"}}  # should only contain courses inside whitelist if defined
+tt_file = 'path/to/TIMETABLE 1ST SEM 2019-20.xlsx'  # path to excel file of timetable. Use single quotes
+# tt_file = 'path/to/TIMETABLE 1ST SEM 2019-20.json'  # path to json file of timetable. Use single quotes
+midsem_file = 'path/to/midsem TIMETABLE I SEM 2019-20.csv'  # skip if you already have the JSON file.
+whitelist = {}
+overrides = {}
+# whitelist = {"IS F341" = ["L", "P"], "CS F211" = ["P"]}  # only these courses will be processed in calendar. Set as {} to process all.
+# overrides = {"IS F341" = {"L" = "L1", "P" = "P2"}}  # Set as {} to not make changes to the erp courses you've registered to. Should only contain courses inside whitelist if defined.

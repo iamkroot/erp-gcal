@@ -25,6 +25,16 @@ NOTE: The timetable changes aren't reflected in the file. You can manually edit 
 ### Configuration
 Config file is in [TOML](https://github.com/toml-lang/toml) format. See [`sample_config.toml`](sample_config.toml). After editing, use [this](http://toml-online-parser.ovonick.com/) site to validate your file.
 
+Parameter | Explanation |
+--------- | -----------
+`MOODLE.wstoken`|The Moodle Mobile Web Service Key for your account. It can be acquired from Preferences -> Security Keys in the Moodle CMS website.
+`DATES.last_date`|The last working date of the semester.
+`DATES.midsem`|The official start and end dates of the midsem exams, when classwork is suspended. No need to set it according to your courses.
+`COURSES.tt_file`|The path to the excel file of the timetable (See [Parsing](#Parsing) section) OR the path to the JSON file of the timetable that you've downloaded. IMP: Use single quotes `'`.
+`COURSES.midsem_file`|Path to the CSV file of the midsem timetable. You can skip this (leave as it is) if you've specified the JSON file in the previous field, as the JSON file already contains the midsem info.
+`COURSES.whitelist`|Only these courses and sections will be processed in calendar. Set as `{}` to process all. Useful for cases when you've already created the calendar, and have enrolled in a new course/new section. <br> NOTE: The courses should be those which you've registered to in ERP.
+`COURSES.override`|Manually specify the sections of the courses, differently from what you've registered to in ERP. Useful when you prefer to go to another Lec/Tut/Lab, different from the official one. Set as `{}` to create the calendar for all the courses you've registered to in the ERP.  <br> NOTE: You still need to be registered in the course in ERP. Only sections can be overriden. <br> NOTE: In case `COURSES.whitelist` is defined, this field should only contain those courses. 
+
 ### Installation
 1. Clone the repo to a directory of your choice/click "[Download as zip](https://github.com/iamkroot/erp-gcal-cms/archive/master.zip)" and extract it.
 2. Rename the `sample_config.toml` to `config.toml` and set the required values (See [Configuration](#Configuration) section). 
