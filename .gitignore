@@ -44,6 +44,5 @@ Thumbs.db
 # Project specific files #
 ##########################
 __pycache__/
-client_secret.json
 TT/
 config.toml

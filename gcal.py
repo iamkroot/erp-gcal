@@ -9,7 +9,7 @@ from utils import find_entity
 
 SCOPES = 'https://www.googleapis.com/auth/calendar'
 CLIENT_SECRET_FILE = 'client_secret.json'
-APPLICATION_NAME = 'Timetable for BPHC'
+APPLICATION_NAME = 'ERP to Google Calendar'
 
 
 def get_credentials():
@@ -17,7 +17,7 @@ def get_credentials():
     credential_dir = os.path.join(home_dir, '.credentials')
     if not os.path.exists(credential_dir):
         os.makedirs(credential_dir)
-    credential_path = os.path.join(credential_dir, 'erp-calendar-creds.json')
+    credential_path = os.path.join(credential_dir, 'erp-gcal-creds.json')
 
     store = Storage(credential_path)
     credentials = store.get()
