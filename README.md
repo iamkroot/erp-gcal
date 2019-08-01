@@ -1,6 +1,8 @@
-# ERP, Google Calendar, Moodle CMS
+# ERP to Google Calendar
 
-A script to create Google Calendar events for the entire semester for the courses you've enrolled in. This is mainly inteded for the use of students of [BITS Pilani](http://bits-pilani.ac.in).
+A script to create Google Calendar events for the entire semester for the courses you've enrolled in. These events can then be viewed on your phone via the calendar app. This is mainly intended for the use of students of [BITS Pilani](http://bits-pilani.ac.in).
+
+![A sample calendar](assets/gcal-week.png)
 
 ## Features
 + Creates detailed calendar events with room and professor information.
@@ -43,7 +45,7 @@ Parameter | Explanation |
 5. Inside the downloaded folder, run `pipenv install` in CMD or Terminal.
 
 ### Running
-Use `pipenv run python main.py` to start the program. During the first run, it will ask you to authorize the app to access you Google Calendar Account. Select your BITS Google Account here. Everything else will be handled by the script.
+Use `pipenv run python main.py` to start the program. During the first run, it will ask you to authorize the app to access your Google Calendar Account. Select your BITS Google Account here. Everything else will be handled by the script.
 
 ## Contributing
 Feel free to create a new issue in case you find a bug/want to have a feature added. Proper PRs are welcome.
