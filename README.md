@@ -17,6 +17,11 @@ The app requires the excel version on the pdf given by Timetable Divison. To con
 
 Follow same steps for midsem schedule, and also, convert the midsem excel to CSV format.
 
+**OR**
+
+You can use the pre-parsed timetable JSON file at [this](https://drive.google.com/drive/folders/1b9GT6G7xyj6Nr9xAfSBJit3rtP3hhd2F?usp=sharing) location (Use BITSmail to log in). I will try to update it every semester, but no guarantees.
+NOTE: The timetable changes aren't reflected in the file. You can manually edit the file as necessary.
+
 ### Configuration
 Config file is in [TOML](https://github.com/toml-lang/toml) format. See [`sample_config.toml`](sample_config.toml). After editing, use [this](http://toml-online-parser.ovonick.com/) site to validate your file.
 
