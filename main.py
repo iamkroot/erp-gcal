@@ -50,11 +50,19 @@ def get_sections():
 
 
 def enrol_cms(course_code, sections):
+    enrolled = cms.get_enrolled_courses()
     for sec_code in sections:
+        if any(course_code in c['fullname'] and sec_code in c['fullname']
+               for c in enrolled):
+            print("Already enrolled to", course_code, sec_code)
+            continue
         print("Enrolling to", course_code, sec_code)
         section = cms.search_course(f"{course_code} {sec_code}")
+        if not section:
+            print("Not found.")
+            continue
         resp = cms.enrol(section['id'])
-        if resp.get('status') != 'true':
+        if resp.get('status') not in (True, 'true'):
             print("error while enrolling")
             print(resp)
 

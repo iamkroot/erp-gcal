@@ -39,6 +39,7 @@ def get_userid():
     return get_siteinfo()['userid']
 
 
+@lru_cache()
 def get_enrolled_courses():
     return get('core_enrol_get_users_courses', {'userid': get_userid()})
 
