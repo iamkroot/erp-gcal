@@ -5,7 +5,7 @@ A script to create Google Calendar events for the entire semester for the course
 ![A sample calendar](assets/gcal-week.png)
 
 ## Features
-+ Creates detailed calendar events with room and professor information.
++ Creates detailed calendar events with Professor and **Room** details - no need to spam WhatsApp groups asking where the class is.
 + Events are color-coded according to type (Lecture, Tutorial, Practical, etc.)
 + Includes Midsem and Compre Exam Events too.
 + You can override course sections to set them different from the ones you've registered to.
