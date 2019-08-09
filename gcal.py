@@ -12,7 +12,7 @@ CLIENT_SECRET_FILE = 'client_secret.json'
 APPLICATION_NAME = 'ERP to Google Calendar'
 
 
-def get_credentials():
+def get_credentials(new_creds=False):
     home_dir = os.path.expanduser('~')
     credential_dir = os.path.join(home_dir, '.credentials')
     if not os.path.exists(credential_dir):
@@ -20,7 +20,7 @@ def get_credentials():
     credential_path = os.path.join(credential_dir, 'erp-gcal-creds.json')
 
     store = Storage(credential_path)
-    credentials = store.get()
+    credentials = None if new_creds else store.get()
     if not credentials or credentials.invalid:
         flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
         flow.user_agent = APPLICATION_NAME
@@ -29,16 +29,16 @@ def get_credentials():
     return credentials
 
 
-def create_cal_serv():
-    credentials = get_credentials()
+def create_cal_serv(new_creds=False):
+    credentials = get_credentials(new_creds)
     http = credentials.authorize(httplib2.Http())
     return build('calendar', 'v3', http=http)
 
 
 class GCal:
-    def __init__(self, cal_id='primary'):
+    def __init__(self, new_creds=False, cal_id='primary'):
         self.cal_id = cal_id
-        self.service = create_cal_serv()
+        self.service = create_cal_serv(new_creds)
 
     def get_all_entities(self, entity_name, **kwargs):
         page_token = None

@@ -1,3 +1,4 @@
+import argparse
 import cms
 import erp
 from datetime import date
@@ -75,16 +76,20 @@ def get_cal_name():
 
 
 def main():
-    events = []
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-n', '--new-creds',
+        action='store_true', default=False,
+        help="Clear previously saved Google credentials.")
+    args = parser.parse_args()
+    gcal = GCal(args.new_creds)
+    gcal.set_cal(get_cal_name())
     for course_code, sections in get_sections().items():
         course = get_course(course_code, sections)
-        events.extend(make_course_events(course))
         enrol_cms(course_code, sections)
-    gcal = GCal()
-    gcal.set_cal(get_cal_name())
-    for event in events:
-        gcal.create_event(event)
-        print("Created", event['summary'])
+        for event in make_course_events(course):
+            gcal.create_event(event)
+            print("Created", event['summary'])
 
 
 if __name__ == '__main__':

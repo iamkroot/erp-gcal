@@ -51,9 +51,13 @@ Use `pipenv run python main.py` to start the program. During the first run, it w
 3. Enroll you into the courses on Moodle CMS.
 4. Start generating Google Calendar events for each section, midsem and compre.
 
+#### Re-running for different users
+By default, the program stores your Google account token, so that it can be reused without needing to login again.
+If you want to run the program multiple times, for different users/Google accounts (of your friends, for example), then simply change their ERP and CMS credentials in the `config.toml`, and then run the program with `pipenv run python main.py -n` (here, `n` stands for "new creds"). This will cause the program to ignore the previously saved Google creds and prompt you for account access again.
+
 ## TODO
 - [ ] Check calendar for pre-existing events. Currently, if the script is run multiple times, it will create duplicate events.
-- [ ] Add argument parsing to enable command line control
+- [x] Add argument parsing to enable command line control
 - [ ] Make CMS enrolment optional
 
 ## Contributing
