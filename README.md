@@ -48,17 +48,20 @@ Parameter | Explanation |
 Use `pipenv run python main.py` to start the program. During the first run, it will ask you to authorize the app to access your Google Calendar Account. Select your BITS Google Account here. Then, the script will do the following automatically:
 1. Login to your ERP, and fetch your registered courses from there.
 2. Read the timetable JSON file, if provided. Otherwise, it will parse the timetable excel file (\~15 secs) and save the JSON version for future use.
-3. Enroll you into the courses on Moodle CMS.
+3. Enroll you into the courses on Moodle CMS, if enabled.
 4. Start generating Google Calendar events for each section, midsem and compre.
 
 #### Re-running for different users
 By default, the program stores your Google account token, so that it can be reused without needing to login again.
 If you want to run the program multiple times, for different users/Google accounts (of your friends, for example), then simply change their ERP and CMS credentials in the `config.toml`, and then run the program with `pipenv run python main.py -n` (here, `n` stands for "new creds"). This will cause the program to ignore the previously saved Google creds and prompt you for account access again.
 
+#### Skip CMS enrolment
+In case you've already enrolled to the courses on Moodle CMS, you can pass `-s` to the program to skip the cms enrolment, like so: `pipenv run python main.py -s`.
+
 ## TODO
 - [ ] Check calendar for pre-existing events. Currently, if the script is run multiple times, it will create duplicate events.
 - [x] Add argument parsing to enable command line control
-- [ ] Make CMS enrolment optional
+- [x] Make CMS enrolment optional
 
 ## Contributing
 Feel free to create a new issue in case you find a bug/want to have a feature added. Proper PRs are welcome.

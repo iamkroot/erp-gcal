@@ -80,13 +80,18 @@ def main():
     parser.add_argument(
         '-n', '--new-creds',
         action='store_true', default=False,
-        help="Clear previously saved Google credentials.")
+        help="Clear previously saved Google credentials")
+    parser.add_argument(
+        '-s', '--skip-cms',
+        action='store_true', default=False,
+        help="Skip enrolling to CMS courses")
     args = parser.parse_args()
     gcal = GCal(args.new_creds)
     gcal.set_cal(get_cal_name())
     for course_code, sections in get_sections().items():
         course = get_course(course_code, sections)
-        enrol_cms(course_code, sections)
+        if not args.skip_cms:
+            enrol_cms(course_code, sections)
         for event in make_course_events(course):
             gcal.create_event(event)
             print("Created", event['summary'])
