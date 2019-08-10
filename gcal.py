@@ -76,6 +76,14 @@ class GCal:
     def create_cal(self, calendar):
         return self.service.calendars().insert(body=calendar).execute()
 
+    def clear_cal(self):
+        if self.cal_id == 'primary':
+            return self.service.calendars().clear('primary').execute()
+        else:
+            events = self.get_all_events()
+            for event in events:
+                self.delete_event(event)
+
     def find_event(self, event):
         events = self.get_all_events()
         fields = ('summary', 'description', 'location')
