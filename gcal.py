@@ -24,8 +24,10 @@ def get_credentials(new_creds=False):
     if not credentials or credentials.invalid:
         flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
         flow.user_agent = APPLICATION_NAME
-        credentials = tools.run_flow(flow, store)
+        args = tools.argparser.parse_known_args()[0]
+        credentials = tools.run_flow(flow, store, args)
         print('Storing credentials to ' + credential_path)
+        print("Pass '-n' next time if you want to run with another account.")
     return credentials
 
 

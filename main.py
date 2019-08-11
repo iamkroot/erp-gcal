@@ -2,7 +2,7 @@ import argparse
 import cms
 import erp
 from datetime import date
-from gcal import GCal
+from gcal import GCal, tools
 from events import make_course_events
 from timetable import get_course
 from utils import config
@@ -76,7 +76,7 @@ def get_cal_name():
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(parents=[tools.argparser])
     parser.add_argument(
         '-n', '--new-creds',
         action='store_true', default=False,
