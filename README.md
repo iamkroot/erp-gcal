@@ -59,7 +59,7 @@ If you want to run the program multiple times, for different users/Google accoun
 In case you've already enrolled to the courses on Moodle CMS, you can pass `-s` to the program to skip the cms enrolment, like so: `pipenv run python main.py -s`.
 
 ## TODO
-- [ ] Check calendar for pre-existing events. Currently, if the script is run multiple times, it will create duplicate events.
+- [x] Check calendar for pre-existing events.
 - [x] Add argument parsing to enable command line control
 - [x] Make CMS enrolment optional
 

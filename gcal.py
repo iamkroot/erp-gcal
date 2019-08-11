@@ -4,6 +4,7 @@ import os
 from apiclient.discovery import build
 from oauth2client import client, tools
 from oauth2client.file import Storage
+from googleapiclient.errors import HttpError
 
 from utils import find_entity
 
@@ -65,7 +66,7 @@ class GCal:
 
     def delete_event(self, event):
         return self.service.events().delete(
-            calendarId=self, eventId=event['id']).execute()
+            calendarId=self.cal_id, eventId=event['id']).execute()
 
     def create_event(self, event):
         return self.service.events().insert(
@@ -92,11 +93,24 @@ class GCal:
         calendar = {'summary': summary}
         if description:
             calendar['description'] = description
-        cal = self.find_cal(calendar) or self.create_cal(calendar)
+        cal = self.find_cal(calendar)
+        if cal:
+            self.cal_id = cal['id']
+            return True
+        cal = self.create_cal(calendar)
         if not cal:
-            print("Failed to create find or create calendar", calendar)
+            print("Failed to find or create calendar", calendar)
             return
         self.cal_id = cal['id']
+
+    def clear_cal(self):
+        for event in self.get_all_events():
+            print("Deleting", self.print_event(event))
+            try:
+                self.delete_event(event)
+            except HttpError as err:
+                if err.resp.status != 410:
+                    raise err
 
     @staticmethod
     def print_event(event):

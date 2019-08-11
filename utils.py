@@ -109,3 +109,10 @@ def find_entity(entity, entities, fields):
             max_ratio = ratio
             best_match = e
     return best_match
+
+
+def get_cal_name():
+    today = date.today()
+    sem = 2 if 1 <= today.month <= 5 else 1
+    year = today.year - sem + 1
+    return f"Timetable Sem {sem}, {year}-{year + 1 - 2000}"

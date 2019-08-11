@@ -1,11 +1,10 @@
 import argparse
 import cms
 import erp
-from datetime import date
 from gcal import GCal, tools
 from events import make_course_events
 from timetable import get_course
-from utils import config
+from utils import config, get_cal_name
 
 
 def whitelist_sections(orig_sections):
@@ -47,6 +46,7 @@ def override_sections(sections):
 
 def get_sections():
     reg_sections = erp.get_reg_sections()
+    print("Fetched registered courses from ERP.")
     return override_sections(whitelist_sections(reg_sections))
 
 
@@ -68,11 +68,12 @@ def enrol_cms(course_code, sections):
             print(resp)
 
 
-def get_cal_name():
-    today = date.today()
-    sem = 2 if 1 <= today.month <= 5 else 1
-    year = today.year - sem + 1
-    return f"Timetable Sem {sem}, {year}-{year + 1 - 2000}"
+def set_cal(gcal: GCal):
+    cal_name = get_cal_name()
+    print("Creating calendar for", cal_name)
+    if gcal.set_cal(cal_name):
+        print("Calendar", cal_name, "already exists. Clearing old events.")
+        gcal.clear_cal()
 
 
 def main():
@@ -86,15 +87,17 @@ def main():
         action='store_true', default=False,
         help="Skip enrolling to CMS courses")
     args = parser.parse_args()
+
     gcal = GCal(args.new_creds)
-    gcal.set_cal(get_cal_name())
+    set_cal(gcal)
+
     for course_code, sections in get_sections().items():
         course = get_course(course_code, sections)
         if not args.skip_cms:
             enrol_cms(course_code, sections)
         for event in make_course_events(course):
             gcal.create_event(event)
-            print("Created", event['summary'])
+            print("Created", gcal.print_event(event))
 
 
 if __name__ == '__main__':
