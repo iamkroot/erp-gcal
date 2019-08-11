@@ -62,6 +62,8 @@ In case you've already enrolled to the courses on Moodle CMS, you can pass `-s` 
 - [x] Check calendar for pre-existing events.
 - [x] Add argument parsing to enable command line control
 - [x] Make CMS enrolment optional
+- [x] Add support for holidays
+- [ ] Support day overrides ("Xday's timetable to be followed" scenarios.)
 
 ## Contributing
 Feel free to create a new issue in case you find a bug/want to have a feature added. Proper PRs are welcome.

@@ -105,7 +105,7 @@ class GCal:
 
     def clear_cal(self):
         for event in self.get_all_events():
-            print("Deleting", self.print_event(event))
+            self.print_event(event, "Deleting")
             try:
                 self.delete_event(event)
             except HttpError as err:
@@ -113,8 +113,12 @@ class GCal:
                     raise err
 
     @staticmethod
-    def print_event(event):
-        print(event.get('summary', event))
+    def print_event(event, prefix="", suffix=""):
+        if prefix:
+            print(prefix, end=' ')
+        print(event.get('summary', event), end=' ' if suffix else '\n')
+        if suffix:
+            print(suffix)
 
 
 if __name__ == '__main__':

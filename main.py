@@ -97,7 +97,7 @@ def main():
             enrol_cms(course_code, sections)
         for event in make_course_events(course):
             gcal.create_event(event)
-            print("Created", gcal.print_event(event))
+            gcal.print_event(event, "Created", "in GCal.")
 
 
 if __name__ == '__main__':
