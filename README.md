@@ -32,6 +32,7 @@ Parameter | Explanation |
 `MOODLE.wstoken`|The Moodle Mobile Web Service Key for your account. It can be acquired from Preferences -> Security Keys in the Moodle CMS website.
 `DATES.last_date`|The last working date of the semester.
 `DATES.midsem`|The official start and end dates of the midsem exams, when classwork is suspended. No need to set it according to your courses.
+`DATES.day_change`|Specify which day's timetable is to be followed on a specific date. (Eg: Monday's timetable to be followed on 16th Aug 2019, which is a Friday, to be written as `2018-08-16 = "MO"`)<br>Weekdays should be one of: `'MO', 'TU', 'WE', 'TH', 'FR', 'SA'`.
 `COURSES.tt_file`|The path to the excel file of the timetable (See [Parsing](#Parsing) section) OR the path to the JSON file of the timetable that you've downloaded. IMP: Use single quotes `'`.
 `COURSES.midsem_file`|Path to the CSV file of the midsem timetable. You can skip this (leave as it is) if you've specified the JSON file in the previous field, as the JSON file already contains the midsem info.
 `COURSES.whitelist`|Only these courses and sections will be processed in calendar. Set as `{}` to process all. Useful for cases when you've already created the calendar, and have enrolled in a new course/new section. <br> NOTE: The courses should be those which you've registered to in ERP.
@@ -63,7 +64,7 @@ In case you've already enrolled to the courses on Moodle CMS, you can pass `-s` 
 - [x] Add argument parsing to enable command line control
 - [x] Make CMS enrolment optional
 - [x] Add support for holidays
-- [ ] Support day overrides ("Xday's timetable to be followed" scenarios.)
+- [x] Support day overrides ("Xday's timetable to be followed" scenarios.)
 
 ## Contributing
 Feel free to create a new issue in case you find a bug/want to have a feature added. Proper PRs are welcome.

@@ -10,11 +10,14 @@ password = "password"
 address = "https://td.bits-hyderabad.ac.in/moodle"
 wstoken = "368b0c8b11dce69420ca42ef45bdd1dc"  # Copy Moodle Mobile Web Service Key from Preferences -> Security Keys
 
-[DATES]
+[DATES]  # this section needs to be manually updated from Timetable every sem
 last_date = 2019-11-29  # last working date of the semester
 midsem.start = 2019-09-28  # should be official date, to ensure correct holidays
 midsem.end = 2019-10-05
 holidays = [2019-08-12, 2019-08-15, 2019-08-24, 2019-09-02, 2019-10-02, 2019-10-08, 2019-10-26, 2019-11-12]
+day_change = {2019-08-16 = "MO", 2019-10-09 = "SA", 2019-10-17 = "SA", 2019-11-01 = "MO"}
+# means, Monday's timetable will be followed on 16 Aug and 1st Nov, Saturday's timetable on 9th and 17th Oct
+# day values should be one of: ['MO', 'TU', 'WE', 'TH', 'FR', 'SA']
 
 [COURSES]
 tt_file = 'path/to/TIMETABLE 1ST SEM 2019-20.xlsx'  # path to excel file of timetable. Use single quotes
