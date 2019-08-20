@@ -13,8 +13,9 @@ def read_toml(path):
     except FileNotFoundError:
         print(f"Missing toml file at {path}.")
         quit()
-    except toml.TomlDecodeError:
-        print(f"Invalid toml file at {path}.")
+    except toml.TomlDecodeError as e:
+        print(f"Invalid TOML in file: {path}")
+        print(f"Error (probably) in line {e.lineno}.")
         quit()
 
 
@@ -43,9 +44,9 @@ def get_weekday(isoweekday):
     return today - timedelta(days=today.weekday() + isoweekday - 1)
 
 
-def retry_on_conn_error(func, max_retries=5):
+def retry_on_conn_error(func):
     def wrapper(*args, **kwargs):
-        for _ in range(max_retries):
+        for _ in range(5):
             try:
                 return func(*args, **kwargs)
             except requests.exceptions.ConnectionError:
