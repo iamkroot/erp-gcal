@@ -25,7 +25,7 @@ You can use the pre-parsed timetable JSON file at [this](https://drive.google.co
 NOTE: The timetable changes aren't reflected in the file. You can manually edit the file as necessary.
 
 ### Configuration
-Config file is in [TOML](https://github.com/toml-lang/toml) format. See [`sample_config.toml`](sample_config.toml). After editing, use [this](http://toml-online-parser.ovonick.com/) site to validate your file.
+Config file is in [TOML](https://github.com/toml-lang/toml) format. See [`sample_config.toml`](sample_config.toml).
 
 Parameter | Explanation |
 --------- | -----------
