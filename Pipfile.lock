@@ -1,10 +1,12 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "f5c5ee393bbface3de8a9dfafd173816739b4bb96cba2e4c129faa8789464cb6"
+            "sha256": "5f3a1dda331b7dd0c1164b8f697dd263ee87357581354540f44d0cb1b667a00e"
         },
         "pipfile-spec": 6,
-        "requires": {},
+        "requires": {
+            "python_version": "3.7"
+        },
         "sources": [
             {
                 "name": "pypi",
@@ -52,11 +54,11 @@
         },
         "google-api-python-client": {
             "hashes": [
-                "sha256:2e55a5c7b56233c68945b6804c73e253445933f4d485d4e69e321b38772b9dd6",
-                "sha256:60f2ac2f27997d9af10ae126d9937b7d8c1fd061d12668ccaf94b4347ee85021"
+                "sha256:3121d55d106ef1a2756e8074239512055bd99eb44da417b3dd680f9a1385adec",
+                "sha256:a8a88174f66d92aed7ebbd73744c2c319b4b1ce828e565f9ec721352d2e2fb8c"
             ],
             "index": "pypi",
-            "version": "==1.7.10"
+            "version": "==1.7.11"
         },
         "google-auth": {
             "hashes": [
@@ -113,31 +115,31 @@
         },
         "oauthlib": {
             "hashes": [
-                "sha256:40a63637707e9163eda62d0f5345120c65e001a790480b8256448543c1f78f66",
-                "sha256:b4d99ae8ccfb7d33ba9591b59355c64eef5241534aa3da2e4c0435346b84bc8e"
+                "sha256:bee41cc35fcca6e988463cacc3bcb8a96224f470ca547e697b604cc697b2f889",
+                "sha256:df884cd6cbe20e32633f1db1072e9356f53638e4361bef4e8b03c9127c9328ea"
             ],
-            "version": "==3.0.2"
+            "version": "==3.1.0"
         },
         "openpyxl": {
             "hashes": [
-                "sha256:1d2af392cef8c8227bd2ac3ebe3a28b25aba74fd4fa473ce106065f0b73bfe2e"
+                "sha256:72d1ed243972cad0b3c236230083cac00d9c72804e64a2ae93d7901aec1a8f1c"
             ],
             "index": "pypi",
-            "version": "==2.6.2"
+            "version": "==2.6.3"
         },
         "pyasn1": {
             "hashes": [
-                "sha256:da2420fe13a9452d8ae97a0e478adde1dee153b11ba832a95b223a2ba01c10f7",
-                "sha256:da6b43a8c9ae93bc80e2739efb38cc776ba74a886e3e9318d65fe81a8b8a2c6e"
+                "sha256:3bb81821d47b17146049e7574ab4bf1e315eb7aead30efe5d6a9ca422c9710be",
+                "sha256:b773d5c9196ffbc3a1e13bdf909d446cad80a039aa3340bcad72f395b76ebc86"
             ],
-            "version": "==0.4.5"
+            "version": "==0.4.6"
         },
         "pyasn1-modules": {
             "hashes": [
-                "sha256:ef721f68f7951fab9b0404d42590f479e30d9005daccb1699b0a51bb4177db96",
-                "sha256:f309b6c94724aeaf7ca583feb1cc70430e10d7551de5e36edfc1ae6909bcfb3c"
+                "sha256:43c17a83c155229839cc5c6b868e8d0c6041dba149789b6d6e28801c64821722",
+                "sha256:e30199a9d221f1b26c885ff3d87fd08694dbbe18ed0e8e405a2a7126d30ce4c0"
             ],
-            "version": "==0.2.5"
+            "version": "==0.2.6"
         },
         "requests": {
             "hashes": [
@@ -170,10 +172,10 @@
         },
         "soupsieve": {
             "hashes": [
-                "sha256:72b5f1aea9101cf720a36bb2327ede866fd6f1a07b1e87c92a1cc18113cbc946",
-                "sha256:e4e9c053d59795e440163733a7fec6c5972210e1790c507e4c7b051d6c5259de"
+                "sha256:8662843366b8d8779dec4e2f921bebec9afd856a5ff2e82cd419acc5054a1a92",
+                "sha256:a5a6166b4767725fd52ae55fee8c8b6137d9a51e9f1edea461a062a759160118"
             ],
-            "version": "==1.9.2"
+            "version": "==1.9.3"
         },
         "toml": {
             "hashes": [

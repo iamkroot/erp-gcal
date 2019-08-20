@@ -41,7 +41,7 @@ Parameter | Explanation |
 ### Installation
 1. Clone the repo to a directory of your choice/click "[Download as zip](https://github.com/iamkroot/erp-gcal-cms/archive/master.zip)" and extract it.
 2. Rename the `sample_config.toml` to `config.toml` and set the required values (See [Configuration](#Configuration) section). 
-3. Ensure you have [Python 3.6](https://www.python.org/downloads/) or higher installed, and in your system `PATH`.
+3. Ensure you have [Python **3.7**](https://www.python.org/downloads/) or higher installed, and in your system `PATH`.
 4. Install `pipenv` using `pip install pipenv`.
 5. Inside the downloaded folder, run `pipenv install` in CMD or Terminal.
 

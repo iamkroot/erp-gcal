@@ -1,3 +1,4 @@
+# Lines that begin with a '#' are comments. No need to edit them.
 [ERP]
 address = "http://10.2.102.21:9000"  # intranet
 # address = "https://erp.bits-pilani.ac.in:4431"  # internet
@@ -20,8 +21,7 @@ day_change = {2019-08-16 = "MO", 2019-10-09 = "SA", 2019-10-17 = "SA", 2019-11-0
 # day values should be one of: ['MO', 'TU', 'WE', 'TH', 'FR', 'SA']
 
 [COURSES]
-tt_file = 'path/to/TIMETABLE 1ST SEM 2019-20.xlsx'  # path to excel file of timetable. Use single quotes
-# tt_file = 'path/to/TIMETABLE 1ST SEM 2019-20.json'  # path to json file of timetable. Use single quotes
+tt_file = 'path/to/TIMETABLE 1ST SEM 2019-20.xlsx'  # path to excel/json file of timetable. Use single quotes
 midsem_file = 'path/to/midsem TIMETABLE I SEM 2019-20.csv'  # skip if you already have the JSON file.
 whitelist = {}
 overrides = {}
