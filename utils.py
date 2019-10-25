@@ -1,6 +1,6 @@
 import json
 import re
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime, time, tzinfo
 import requests
 import toml
 from difflib import SequenceMatcher
@@ -42,6 +42,18 @@ def write_json(file, data):
 def get_weekday(isoweekday):
     today = date.today()
     return today - timedelta(days=today.weekday() + isoweekday - 1)
+
+
+class IST(tzinfo):
+    def utcoffset(self, dt):
+        return timedelta(hours=5, minutes=30)
+
+    def dst(self, dt):
+        return timedelta(0)
+
+
+def combine_dt(date_, time_=time(0, 0), tz=IST):
+    return datetime.combine(date_, time_, tz())
 
 
 def retry_on_conn_error(func):

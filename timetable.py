@@ -1,24 +1,13 @@
 import bisect
 import re
-from datetime import datetime as dt, timedelta as td, time, date, tzinfo
+from datetime import datetime as dt, timedelta as td, time, date
 from functools import partial
 from parse_excel import get_course_db
+from utils import combine_dt
 
 courses_data = get_course_db()
 ISO_WDAY = {d: i for i, d in enumerate(('M', 'T', 'W', 'Th', 'F', 'S'), 1)}
 MIDSEM_PAT = re.compile(r'(\d{1,2})\.(\d{2}) -- (\d{1,2})\.(\d{2}) (\w{2})')
-
-
-class IST(tzinfo):
-    def utcoffset(self, dt):
-        return td(hours=5, minutes=30)
-
-    def dst(self, dt):
-        return td(0)
-
-
-def combine(e_date, e_time):
-    return dt.combine(e_date, e_time, IST())
 
 
 def calc_start_date(wdays, skip_today=False):
@@ -39,8 +28,8 @@ def parse_sched(sched):
     start_date = calc_start_date(weekdays, end_time < dt.now().time())
     return {
         'room': sched['room'],
-        'start': combine(start_date, start_time),
-        'end': combine(start_date, end_time),
+        'start': combine_dt(start_date, start_time),
+        'end': combine_dt(start_date, end_time),
         'wdays': weekdays
     }
 
@@ -72,8 +61,8 @@ def parse_midsem(midsem):
     start = time(hour=times[0] + 12 * is_pm, minute=times[1])
     end = time(hour=times[2] + 12 * is_pm, minute=times[3])
     return {
-        'start': combine(midsem_date, start),
-        'end': combine(midsem_date, end)
+        'start': combine_dt(midsem_date, start),
+        'end': combine_dt(midsem_date, end)
     }
 
 
@@ -83,7 +72,7 @@ def parse_compre(compre):
     compre_date = parse_date(compre['date'])
 
     def comb(hour):
-        return combine(compre_date, time(hour=hour))
+        return combine_dt(compre_date, time(hour=hour))
 
     start = 9 if compre['session'] == 'FN' else 14
     return {'start': comb(start), 'end': comb(start + 3)}
