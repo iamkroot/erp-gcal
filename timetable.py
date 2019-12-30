@@ -2,12 +2,12 @@ import bisect
 import re
 from datetime import datetime as dt, timedelta as td, time, date
 from functools import partial
-from parse_excel import get_course_db
+
+from parse_excel import course_db
 from utils import combine_dt
 
-courses_data = get_course_db()
 ISO_WDAY = {d: i for i, d in enumerate(('M', 'T', 'W', 'Th', 'F', 'S'), 1)}
-MIDSEM_PAT = re.compile(r'(\d{1,2})\.(\d{2}) -- (\d{1,2})\.(\d{2}) (\w{2})')
+MIDSEM_PAT = re.compile(r'(\d{1,2})\.(\d{2})\s*-+\s*(\d{1,2})\.(\d{2})\s*(\w{2})')
 
 
 def calc_start_date(wdays, skip_today=False):
@@ -91,7 +91,7 @@ def get_section(sections, sec_num):
 
 
 def get_course(course_code, sel_sections):
-    course = courses_data.get(course_code)
+    course = course_db[course_code]
     if not course:
         return
     get_sec_data = partial(get_section, course['sections'])
@@ -102,3 +102,18 @@ def get_course(course_code, sel_sections):
         'midsem': parse_midsem(course.get('midsem')),
         'compre': parse_compre(course.get('compre'))
     }
+
+
+def validate_db():
+    for course, data in course_db.timetable.items():
+        try:
+            get_course(course, data["sections"])
+        except Exception as e:
+            print(f"Invalid data in '{course}'")
+            print(data)
+            raise e
+    print("The parsed data is (probably) valid!")
+
+
+if __name__ == '__main__':
+    validate_db()

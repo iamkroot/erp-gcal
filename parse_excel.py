@@ -95,27 +95,50 @@ def parse_midsem(file_path: Path):
 
 
 def parse_files(tt_file: Path, midsem_file: Path):
-    course_db = parse_main_tt(tt_file)
+    timetable = parse_main_tt(tt_file)
     midsem = parse_midsem(midsem_file)
     for k, v in midsem.items():
-        course_db[k]["midsem"] = v
-    return course_db
+        timetable[k]["midsem"] = v
+    return timetable
 
 
-def get_course_db(tt_file, midsem_file):
-    json_file = tt_file.with_suffix(".json")
-    if not json_file.exists():
-        course_db = parse_files(tt_file, midsem_file)
-        write_json(json_file, course_db)
-    else:
-        course_db = read_json(json_file)
-    return course_db
+class CourseDB:
+    tt_file = Path(config["COURSES"]["tt_file"])
+    midsem_file = Path(config["COURSES"]["midsem_file"])
+    _course_db = None
+    _timetable = None
+
+    def __new__(cls, *args, **kwargs):
+        if not cls._course_db:
+            cls._course_db = super().__new__(cls, *args, **kwargs)
+        return cls._course_db
+
+    def get_timetable(self, force_parse=False):
+        json_file = self.tt_file.with_suffix(".json")
+        if not json_file.exists() or force_parse:
+            self._timetable = parse_files(self.tt_file, self.midsem_file)
+            write_json(json_file, self._timetable)
+        else:
+            self._timetable = read_json(json_file)
+        return self._timetable
+
+    def __getitem__(self, course_code):
+        if not self._timetable:
+            self._timetable = self.get_timetable()
+        return self._timetable.get(course_code)
+
+    @property
+    def timetable(self):
+        if not self._timetable:
+            self._timetable = self.get_timetable()
+        return self._timetable
+
+
+course_db = CourseDB()
 
 
 def main():
-    tt_file = Path(config["COURSES"]["tt_file"])
-    midsem_file = Path(config["COURSES"]["midsem_file"])
-    write_json(tt_file.with_suffix(".json"), parse_files(tt_file, midsem_file))
+    CourseDB().get_timetable(True)
 
 
 if __name__ == "__main__":
