@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "erp-gcal"
+version = "0.1.0"
+description = "A script to create Google Calendar events for the entire semester for the courses you've enrolled in."
+authors = ["iamkroot <kroot.patel@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+beautifulsoup4 = "^4.8.2"
+google-api-python-client = "^1.7.11"
+google-auth-httplib2 = "^0.0.3"
+google-auth-oauthlib = "^0.4.1"
+oauth2client = "^4.1.3"
+openpyxl = "^3.0.2"
+requests = "^2.22.0"
+toml = "^0.10.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
