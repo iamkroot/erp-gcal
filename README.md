@@ -17,12 +17,10 @@ The app requires the excel version on the pdf given by Timetable Divison. To con
 1. Extract the main timetable pages from the pdf into another pdf. (You can use a print to pdf service for this).
 2. Use [this](https://ilovepdf.com/pdf_to_excel) site to convert to excel.
 
-Follow same steps for midsem schedule, and also, convert the midsem excel to CSV format.
-
 **OR**
 
 You can use the pre-parsed timetable JSON file at [this](https://drive.google.com/drive/folders/1b9GT6G7xyj6Nr9xAfSBJit3rtP3hhd2F?usp=sharing) location (Use BITSmail to log in). I will try to update it every semester, but no guarantees.
-NOTE: The timetable changes aren't reflected in the file. You can manually edit the file as necessary.
+**NOTE:** The timetable changes aren't reflected in the file. You can manually edit the file as necessary.
 
 ### Configuration
 Config file is in [TOML](https://github.com/toml-lang/toml) format. See [`sample_config.toml`](sample_config.toml).
@@ -42,11 +40,11 @@ Parameter | Explanation |
 1. Clone the repo to a directory of your choice/click "[Download as zip](https://github.com/iamkroot/erp-gcal-cms/archive/master.zip)" and extract it.
 2. Rename the `sample_config.toml` to `config.toml` and set the required values (See [Configuration](#Configuration) section). 
 3. Ensure you have [Python **3.7**](https://www.python.org/downloads/) or higher installed, and in your system `PATH`.
-4. Install `pipenv` using `pip install pipenv`.
-5. Inside the downloaded folder, run `pipenv install` in CMD or Terminal.
+4. Install `poetry` using `pip install poetry`.
+5. Inside the downloaded folder, run `poetry install` in CMD or Terminal.
 
 ### Running
-Use `pipenv run python main.py` to start the program. During the first run, it will ask you to authorize the app to access your Google Calendar Account. Select your BITS Google Account here. Then, the script will do the following automatically:
+Use `poetry run python main.py` to start the program. During the first run, it will ask you to authorize the app to access your Google Calendar Account. Select your BITS Google Account here. Then, the script will do the following automatically:
 1. Login to your ERP, and fetch your registered courses from there.
 2. Read the timetable JSON file, if provided. Otherwise, it will parse the timetable excel file (\~15 secs) and save the JSON version for future use.
 3. Enroll you into the courses on Moodle CMS, if enabled.
@@ -54,10 +52,10 @@ Use `pipenv run python main.py` to start the program. During the first run, it w
 
 #### Re-running for different users
 By default, the program stores your Google account token, so that it can be reused without needing to login again.
-If you want to run the program multiple times, for different users/Google accounts (of your friends, for example), then simply change their ERP and CMS credentials in the `config.toml`, and then run the program with `pipenv run python main.py -n` (here, `n` stands for "new creds"). This will cause the program to ignore the previously saved Google creds and prompt you for account access again.
+If you want to run the program multiple times, for different users/Google accounts (of your friends, for example), then simply change their ERP and CMS credentials in the `config.toml`, and then run the program with `poetry run python main.py -n` (here, `n` stands for "new creds"). This will cause the program to ignore the previously saved Google creds and prompt you for account access again.
 
 #### Skip CMS enrolment
-In case you've already enrolled to the courses on Moodle CMS, you can pass `-s` to the program to skip the cms enrolment, like so: `pipenv run python main.py -s`.
+In case you've already enrolled to the courses on Moodle CMS, you can pass `-s` to the program to skip the cms enrolment, like so: `poetry run python main.py -s`.
 
 ## TODO
 - [x] Check calendar for pre-existing events.
