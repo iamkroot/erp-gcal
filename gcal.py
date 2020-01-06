@@ -100,7 +100,7 @@ class GCal:
     def find_cal(self, cal):
         cals = self.get_all_cals()
         fields = ("summary", "description")
-        return find_entity(cal, cals, fields)
+        return find_entity(cal, cals, fields, thresh=1)  # name should be exact match
 
     def set_cal(self, summary, description=None):
         calendar = {"summary": summary}

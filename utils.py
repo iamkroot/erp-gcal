@@ -114,11 +114,11 @@ def fuzzymatch_dicts(target, source, fields=None, thresh=0.8):
         return 0
 
 
-def find_entity(entity, entities, fields):
+def find_entity(entity, entities, fields, thresh=0.8):
     max_ratio = 0
     best_match = None
     for e in entities:
-        ratio = fuzzymatch_dicts(entity, e, fields)
+        ratio = fuzzymatch_dicts(entity, e, fields, thresh)
         if max_ratio < ratio:
             max_ratio = ratio
             best_match = e
