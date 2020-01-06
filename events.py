@@ -7,7 +7,7 @@ from utils import combine_dt, config
 
 DATE_FMT = '%Y%m%dT%H%M%S'
 RFC_WDAY = ('MO', 'TU', 'WE', 'TH', 'FR', 'SA')
-LAST_DATE = config['DATES']['last_date'].strftime('%Y%m%d')
+LAST_DATE = (config['DATES']['last_date'] + timedelta(days=1)).strftime('%Y%m%d')
 COLORS = {'event': {'L': '9', 'P': '6', 'T': '10'},
           'midsem': '4', 'compre': '7'}
 MIDSEM_DATES = config['DATES']['midsem']
