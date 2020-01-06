@@ -85,22 +85,29 @@ def main():
         '-n', '--new-creds',
         action='store_true', default=False,
         help="Clear previously saved Google credentials")
-    parser.add_argument(
+    cms_group = parser.add_mutually_exclusive_group()
+    cms_group.add_argument(
         '-s', '--skip-cms',
         action='store_true', default=False,
         help="Skip enrolling to CMS courses")
+    cms_group.add_argument(
+        '-o', '--only-cms',
+        action='store_true', default=False,
+        help="Only enrol to CMS courses")
     args = parser.parse_args()
 
-    gcal = GCal(args.new_creds)
-    set_cal(gcal)
+    if not args.only_cms:
+        gcal = GCal(args.new_creds)
+        set_cal(gcal)
 
     for course_code, sections in get_sections().items():
         course = get_course(course_code, sections)
         if not args.skip_cms:
             enrol_cms(course_code, sections)
-        for event in make_course_events(course):
-            gcal.create_event(event)
-            gcal.print_event(event, "Created", "in GCal.")
+        if not args.only_cms:
+            for event in make_course_events(course):
+                gcal.create_event(event)
+                gcal.print_event(event, "Created", "in GCal.")
 
 
 if __name__ == '__main__':
