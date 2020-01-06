@@ -1,23 +1,37 @@
 from collections import defaultdict
 from datetime import date, timedelta
-from functools import partial
+from functools import lru_cache, partial
 from itertools import chain
 
-from utils import combine_dt, config
+from utils import combine_dt, config, cur_sem
 
 DATE_FMT = '%Y%m%dT%H%M%S'
 RFC_WDAY = ('MO', 'TU', 'WE', 'TH', 'FR', 'SA')
-LAST_DATE = (config['DATES']['last_date'] + timedelta(days=1)).strftime('%Y%m%d')
 COLORS = {'event': {'L': '9', 'P': '6', 'T': '10'},
           'midsem': '4', 'compre': '7'}
-MIDSEM_DATES = config['DATES']['midsem']
+
+MIDSEM_DATES = config['DATES'].get("midsem")
+if MIDSEM_DATES:
+    assert isinstance(MIDSEM_DATES["start"], date)
+    assert MIDSEM_DATES["start"] >= date.today(), "Midsem start date is in the past"
+
 HOLIDAYS = set(config['DATES'].get('holidays', []))
+
 INCLUDE_DATES = defaultdict(list)
 for change_date, day in config['DATES'].get('day_change', {}).items():
     assert day in RFC_WDAY, f"Invalid day '{day}' in 'day_change' config"
     change_date = date.fromisoformat(change_date)
     INCLUDE_DATES[day].append(change_date)
 CHANGE_DATES = tuple(chain.from_iterable(INCLUDE_DATES.values()))
+
+
+@lru_cache()
+def get_last_date():
+    default_last_date = date(date.today().year, 11 if cur_sem() == 1 else 4, 29)
+    last_date = config['DATES'].get('last_date', default_last_date) + timedelta(days=1)
+    if last_date < date.today():
+        last_date = default_last_date
+    return last_date.strftime('%Y%m%d')
 
 
 def join_event_dt(event, date):
@@ -34,14 +48,14 @@ def get_indates(event):
 
 def get_exdates(event, indates):
     exdates = HOLIDAYS.copy()
-    midsem_date = MIDSEM_DATES['start']
-    while midsem_date <= MIDSEM_DATES['end']:
-        if midsem_date.isoweekday() in event['wdays']:
-            exdates.add(midsem_date)
-        midsem_date = midsem_date + timedelta(days=1)
+    if MIDSEM_DATES:
+        midsem_date = MIDSEM_DATES['start']
+        while midsem_date <= MIDSEM_DATES['end']:
+            if midsem_date.isoweekday() in event['wdays']:
+                exdates.add(midsem_date)
+            midsem_date = midsem_date + timedelta(days=1)
     for change_date in CHANGE_DATES:
-        if change_date.isoweekday() in event['wdays'] and \
-           change_date not in indates:
+        if change_date.isoweekday() in event['wdays'] and change_date not in indates:
             exdates.add(change_date)
     return exdates
 
@@ -51,7 +65,7 @@ def make_section_events(course_name, section):
         rrule = {
             'FREQ': 'WEEKLY',
             'BYDAY': ','.join(RFC_WDAY[day - 1] for day in event['wdays']),
-            'UNTIL': LAST_DATE
+            'UNTIL': get_last_date()
         }
         get_dt = partial(join_event_dt, event)
         indates = get_indates(event)
