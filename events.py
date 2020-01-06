@@ -1,9 +1,9 @@
 from collections import defaultdict
-from datetime import timedelta, date
+from datetime import date, timedelta
 from functools import partial
 from itertools import chain
-from timetable import combine
-from utils import config
+
+from utils import combine_dt, config
 
 DATE_FMT = '%Y%m%dT%H%M%S'
 RFC_WDAY = ('MO', 'TU', 'WE', 'TH', 'FR', 'SA')
@@ -21,7 +21,7 @@ CHANGE_DATES = tuple(chain.from_iterable(INCLUDE_DATES.values()))
 
 
 def join_event_dt(event, date):
-    return combine(date, event['start'].time()).strftime(DATE_FMT)
+    return combine_dt(date, event['start'].time()).strftime(DATE_FMT)
 
 
 def get_indates(event):

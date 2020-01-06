@@ -1,13 +1,13 @@
-import httplib2
 import os
-from datetime import datetime as dt, timedelta as td
+from datetime import datetime as dt
+from datetime import timedelta as td
 
+import httplib2
 from apiclient.discovery import build
+from googleapiclient.errors import HttpError
 from oauth2client import client, tools
 from oauth2client.file import Storage
-from googleapiclient.errors import HttpError
-
-from utils import find_entity, combine_dt
+from utils import combine_dt, find_entity
 
 SCOPES = "https://www.googleapis.com/auth/calendar"
 CLIENT_SECRET_FILE = "client_secret.json"

@@ -1,8 +1,9 @@
 import argparse
+
 import cms
 import erp
-from gcal import GCal, tools
 from events import make_course_events
+from gcal import GCal, tools
 from timetable import get_course
 from utils import config, get_cal_name
 

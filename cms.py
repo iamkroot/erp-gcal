@@ -1,6 +1,6 @@
-import requests
-
 from functools import lru_cache
+
+import requests
 from utils import config, pprint_json
 
 REST_URL = config['MOODLE']['address'] + "/webservice/rest/server.php"

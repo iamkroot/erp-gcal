@@ -1,6 +1,9 @@
 import bisect
 import re
-from datetime import datetime as dt, timedelta as td, time, date
+from datetime import date
+from datetime import datetime as dt
+from datetime import time
+from datetime import timedelta as td
 from functools import partial
 
 from parse_excel import course_db

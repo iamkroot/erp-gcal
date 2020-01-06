@@ -1,7 +1,8 @@
 import re
+
 import requests
 from bs4 import BeautifulSoup
-from utils import config, retry_on_conn_error, get_weekday
+from utils import config, get_weekday, retry_on_conn_error
 
 sess = requests.Session()
 

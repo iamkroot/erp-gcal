@@ -1,9 +1,10 @@
 import json
 import re
-from datetime import date, timedelta, datetime, time, tzinfo
+from datetime import date, datetime, time, timedelta, tzinfo
+from difflib import SequenceMatcher
+
 import requests
 import toml
-from difflib import SequenceMatcher
 
 
 def read_toml(path):
