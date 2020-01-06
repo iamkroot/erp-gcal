@@ -96,9 +96,12 @@ def parse_midsem(file_path: Path):
 
 def parse_files(tt_file: Path, midsem_file: Path):
     timetable = parse_main_tt(tt_file)
-    midsem = parse_midsem(midsem_file)
-    for k, v in midsem.items():
-        timetable[k]["midsem"] = v
+    if midsem_file.exists():
+        midsem = parse_midsem(midsem_file)
+        for k, v in midsem.items():
+            timetable[k]["midsem"] = v
+    else:
+        print(f"File '{midsem_file}' not found. Midsem details will not be added.")
     return timetable
 
 

@@ -15,11 +15,13 @@ A script to create Google Calendar events for the entire semester for the course
 ### Parsing
 The app requires the excel version on the pdf given by Timetable Divison. To convert:
 1. Extract the main timetable pages from the pdf into another pdf. (You can use a print to pdf service for this).
-2. Use [this](https://ilovepdf.com/pdf_to_excel) site to convert to excel.
+2. Use [this](https://ilovepdf.com/pdf_to_excel) site to convert pdf to excel.
+Optional: Repeat the steps for midsem portion of original pdf to be able to create midsem events.
 
 **OR**
 
 You can use the pre-parsed timetable JSON file at [this](https://drive.google.com/drive/folders/1b9GT6G7xyj6Nr9xAfSBJit3rtP3hhd2F?usp=sharing) location (Use BITSmail to log in). I will try to update it every semester, but no guarantees.
+
 **NOTE:** The timetable changes aren't reflected in the file. You can manually edit the file as necessary.
 
 ### Configuration
@@ -37,10 +39,10 @@ Parameter | Explanation |
 `COURSES.override`|Manually specify the sections of the courses, differently from what you've registered to in ERP. Useful when you prefer to go to another Lec/Tut/Lab, different from the official one. Set as `{}` to create the calendar for all the courses you've registered to in the ERP.  <br> NOTE: You still need to be registered in the course in ERP. Only sections can be overriden. <br> NOTE: In case `COURSES.whitelist` is defined, this field should only contain those courses. 
 
 ### Installation
-1. Clone the repo to a directory of your choice/click "[Download as zip](https://github.com/iamkroot/erp-gcal-cms/archive/master.zip)" and extract it.
+1. Clone the repo to a directory of your choice/click "[Download as zip](https://github.com/iamkroot/erp-gcal/archive/master.zip)" and extract it.
 2. Rename the `sample_config.toml` to `config.toml` and set the required values (See [Configuration](#Configuration) section). 
 3. Ensure you have [Python **3.7**](https://www.python.org/downloads/) or higher installed, and in your system `PATH`.
-4. Install `poetry` using `pip install poetry`.
+4. Install [`poetry`](https://poetry.eustace.io/) using `pip install poetry`.
 5. Inside the downloaded folder, run `poetry install` in CMD or Terminal.
 
 ### Running
