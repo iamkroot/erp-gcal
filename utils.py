@@ -2,6 +2,7 @@ import json
 import re
 from datetime import date, datetime, time, timedelta, tzinfo
 from difflib import SequenceMatcher
+from functools import lru_cache
 
 import requests
 import toml
@@ -40,6 +41,7 @@ def write_json(file, data):
         json.dump(data, f, indent=4)
 
 
+@lru_cache()
 def get_weekday(isoweekday):
     today = date.today()
     return today - timedelta(days=today.weekday() + isoweekday - 1)
@@ -53,6 +55,7 @@ class IST(tzinfo):
         return timedelta(0)
 
 
+@lru_cache()
 def combine_dt(date_, time_=time(0, 0), tz=IST):
     return datetime.combine(date_, time_, tz())
 
@@ -125,8 +128,12 @@ def find_entity(entity, entities, fields, thresh=0.8):
     return best_match
 
 
+@lru_cache()
+def cur_sem():
+    return 2 if 1 <= date.today().month <= 5 else 1
+
+
 def get_cal_name():
-    today = date.today()
-    sem = 2 if 1 <= today.month <= 5 else 1
-    year = today.year - sem + 1
-    return f"Timetable Sem {sem}, {year}-{year + 1 - 2000}"
+    sem = cur_sem()
+    acad_year = date.today().year - sem + 1
+    return f"Timetable Sem {sem}, {acad_year}-{acad_year + 1 - 2000}"
