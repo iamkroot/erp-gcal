@@ -37,11 +37,13 @@ def override_sections(sections):
         if not course:
             print("Unknown course in overrides:", course_code)
             continue
-        for sec_code, sec in course_sections.items():
-            if sec_code not in course:
-                print(f"Unknown section in overrides of {course_code}:", sec)
-                continue
-            course[sec_code] = sec
+        for orig_sec, new_sec in course_sections.items():
+            try:
+                course.remove(orig_sec)
+            except KeyError:
+                print(f"Unknown old section in overrides of {course_code}: {orig_sec}")
+            else:
+                course.add(new_sec)
     return sections
 
 

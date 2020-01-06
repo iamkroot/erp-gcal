@@ -26,4 +26,4 @@ midsem_file = 'path/to/midsem Timetable II Sem 2019-20.xlsx'  # skip if you alre
 whitelist = {}
 overrides = {}
 # whitelist = {"IS F341" = ["L", "P"], "CS F211" = ["P"]}  # only these courses will be processed in calendar. Set as {} to process all.
-# overrides = {"IS F341" = {"L" = "L1", "P" = "P2"}}  # Set as {} to not make changes to the erp courses you've registered to. Should only contain courses inside whitelist if defined.
+# overrides = {"IS F341" = {"L2" = "L1", "P4" = "P2"}}  # LHS is old, RHS is new section. Other courses will be processed without any changes.
