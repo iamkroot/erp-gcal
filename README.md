@@ -29,7 +29,7 @@ Config file is in [TOML](https://github.com/toml-lang/toml) format. See [`sample
 
 Parameter | Explanation |
 --------- | -----------
-`MOODLE.wstoken`|The Moodle Mobile Web Service Key for your account. It can be acquired from Preferences -> Security Keys in the Moodle CMS website.
+`MOODLE.wstoken`|The Moodle Mobile Web Service Key for your account. It can be acquired from `Preferences -> Security Keys -> Mobile web service key` in the Moodle CMS website.
 `DATES.last_date`|The last working date of the semester.
 `DATES.midsem`|The official start and end dates of the midsem exams, when classwork is suspended. No need to set it according to your courses.
 `DATES.day_change`|Specify which day's timetable is to be followed on a specific date. (Eg: Monday's timetable to be followed on 16th Aug 2019, which is a Friday, to be written as `2018-08-16 = "MO"`)<br>Weekdays should be one of: `'MO', 'TU', 'WE', 'TH', 'FR', 'SA'`.
@@ -65,6 +65,13 @@ In case you've already enrolled to the courses on Moodle CMS, you can pass `-s` 
 - [x] Make CMS enrolment optional
 - [x] Add support for holidays
 - [x] Support day overrides ("Xday's timetable to be followed" scenarios.)
+
+## Limitations
+- Initial parsing step is very cumbersome as our input is PDF files.
+- The holidays, midsem dates, day overrides etc. have to be manually added to config and aren't extracted automatically.
+- Timetable changes aren't parsed. The JSON has to be edited manually.
+- For reruns, the Google calendar for the semester is cleared completely at the start. The app then recreates the events for all the courses again. Pretty bad in case there are only a few changes to be made.
+- Can't unerol from CMS courses ([Blocker](https://tracker.moodle.org/browse/MDL-64255))
 
 ## Contributing
 Feel free to create a new issue in case you find a bug/want to have a feature added. Proper PRs are welcome.
