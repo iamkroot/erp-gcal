@@ -8,26 +8,6 @@ from timetable import get_course
 from utils import config, get_cal_name
 
 
-def whitelist_sections(orig_sections):
-    whitelist = config['COURSES'].get('whitelist')
-    if not whitelist:
-        return orig_sections
-    sections = {}
-    for course_code, sec_types in whitelist.items():
-        course = orig_sections.get(course_code)
-        if not course:
-            print("Unknown course in whitelist:", course_code)
-            continue
-        if sec_types == "all":
-            sections[course_code] = course
-        elif isinstance(sec_types, list):
-            sections[course_code] = {
-                sec_type: course[sec_type] for sec_type in sec_types}
-        else:
-            print("Invalid section for {course_code} in whitelist:", sec_types)
-    return sections
-
-
 def override_sections(sections):
     overrides = config['COURSES'].get('overrides')
     if not overrides:
@@ -45,12 +25,6 @@ def override_sections(sections):
             else:
                 course.add(new_sec)
     return sections
-
-
-def get_sections():
-    reg_sections = erp.get_reg_sections()
-    print("Fetched registered courses from ERP.")
-    return override_sections(whitelist_sections(reg_sections))
 
 
 def enrol_cms(course_code, sections):
@@ -100,7 +74,11 @@ def main():
         gcal = GCal(args.new_creds)
         set_cal(gcal)
 
-    for course_code, sections in get_sections().items():
+    reg_sections = erp.get_reg_sections()
+    print("Fetched registered courses from ERP.")
+    final_secions = override_sections(reg_sections)
+
+    for course_code, sections in final_secions.items():
         course = get_course(course_code, sections)
         if not args.skip_cms:
             enrol_cms(course_code, sections)
