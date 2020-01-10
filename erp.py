@@ -43,7 +43,7 @@ def get_weekly_sched(start_date=get_weekday(1)):
     r = sess.get(url)
     payload = {
         'DERIVED_CLASS_S_START_DT': start_date.strftime('%d/%m/%Y'),
-        'DERIVED_CLASS_S_MEETING_TIME_END': '4:00PM',
+        'DERIVED_CLASS_S_MEETING_TIME_END': '6:00PM',
         'DERIVED_CLASS_S_SUNDAY_LBL': 'N',
         'ICAction': 'DERIVED_CLASS_S_SSR_NEXT_WEEK'
     }
