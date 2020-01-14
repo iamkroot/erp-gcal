@@ -41,7 +41,7 @@ Parameter | Explanation |
 1. Clone the repo to a directory of your choice/click "[Download as zip](https://github.com/iamkroot/erp-gcal/archive/master.zip)" and extract it.
 2. Rename the `sample_config.toml` to `config.toml` and set the required values (See [Configuration](#Configuration) section). 
 3. Ensure you have [Python **3.7**](https://www.python.org/downloads/) or higher installed, and in your system `PATH`.
-4. Install [`poetry`](https://poetry.eustace.io/) using `pip install poetry`.
+4. Install [`poetry`](https://python-poetry.org/docs/#installation) and reboot your PC.
 5. Inside the downloaded folder, run `poetry install` in CMD or Terminal.
 
 ### Running
