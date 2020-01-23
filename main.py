@@ -45,8 +45,7 @@ def enrol_cms(course_code, sections):
             print(resp)
 
 
-def set_cal(gcal: GCal):
-    cal_name = get_cal_name()
+def set_cal(gcal: GCal, cal_name):
     print("Creating calendar for", cal_name)
     if gcal.set_cal(cal_name):
         print("Calendar", cal_name, "already exists. Clearing old events.")
@@ -54,11 +53,17 @@ def set_cal(gcal: GCal):
 
 
 def main():
-    parser = argparse.ArgumentParser(parents=[tools.argparser])
+    parser = argparse.ArgumentParser(
+        parents=[tools.argparser],
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         '-n', '--new-creds',
         action='store_true', default=False,
         help="Clear previously saved Google credentials")
+    parser.add_argument(
+        '-t', '--title',
+        default=get_cal_name(),
+        help="Name of the calendar")
     cms_group = parser.add_mutually_exclusive_group()
     cms_group.add_argument(
         '-s', '--skip-cms',
@@ -72,7 +77,7 @@ def main():
 
     if not args.only_cms:
         gcal = GCal(args.new_creds)
-        set_cal(gcal)
+        set_cal(gcal, args.title)
 
     reg_sections = erp.get_reg_sections()
     print("Fetched registered courses from ERP.")
