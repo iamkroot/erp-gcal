@@ -117,8 +117,10 @@ class CourseDB:
         return cls._course_db
 
     def get_timetable(self, force_parse=False):
+        if not self.tt_file.exists():
+            raise FileNotFoundError(self.tt_file)
         json_file = self.tt_file.with_suffix(".json")
-        if not json_file.exists() or force_parse:
+        if not json_file.exists() or (force_parse and self.tt_file.suffix != '.json'):
             self._timetable = parse_files(self.tt_file, self.midsem_file)
             write_json(json_file, self._timetable)
         else:
