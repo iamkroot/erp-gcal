@@ -30,7 +30,6 @@ Config file is in [TOML](https://github.com/toml-lang/toml) format. See [`sample
 Parameter | Explanation |
 --------- | -----------
 `MOODLE.wstoken`|The Moodle Mobile Web Service Key for your account. It can be acquired from `Preferences -> Security Keys -> Mobile web service key` in the Moodle CMS website.
-`DATES.last_date`|The last working date of the semester.
 `DATES.midsem`|The official start and end dates of the midsem exams, when classwork is suspended. No need to set it according to your courses.
 `DATES.day_change`|Specify which day's timetable is to be followed on a specific date. (Eg: Monday's timetable to be followed on 16th Aug 2019, which is a Friday, to be written as `2018-08-16 = "MO"`)<br>Weekdays should be one of: `'MO', 'TU', 'WE', 'TH', 'FR', 'SA'`.
 `COURSES.tt_file`|The path to the excel file of the timetable (See [Parsing](#Parsing) section) OR the path to the JSON file of the timetable that you've downloaded. IMP: Use single quotes `'`.

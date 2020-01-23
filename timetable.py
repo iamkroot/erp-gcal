@@ -1,25 +1,22 @@
 import bisect
 import re
-from datetime import date
-from datetime import datetime as dt
-from datetime import time
-from datetime import timedelta as td
+from datetime import date, time, timedelta as td
 from functools import partial
 
 from parse_excel import course_db
-from utils import combine_dt
+from utils import combine_dt, sem_start_date
 
 ISO_WDAY = {d: i for i, d in enumerate(('M', 'T', 'W', 'Th', 'F', 'S'), 1)}
 MIDSEM_PAT = re.compile(r'(\d{1,2})\.(\d{2})\s*-+\s*(\d{1,2})\.(\d{2})\s*(\w{2})')
 
 
-def calc_start_date(wdays, skip_today=False):
-    today = dt.today()
-    if not skip_today and today.isoweekday() in wdays:
-        return today
-    lower = bisect.bisect(wdays, today.isoweekday())
-    return today + td(
-        days=wdays[lower % len(wdays)] - today.isoweekday(),
+def calc_start_date(wdays):
+    start_day = sem_start_date.isoweekday()
+    if start_day in wdays:
+        return sem_start_date
+    lower = bisect.bisect(wdays, start_day)
+    return sem_start_date + td(
+        days=wdays[lower % len(wdays)] - start_day,
         weeks=(lower == len(wdays))
     )
 
@@ -28,7 +25,7 @@ def parse_sched(sched):
     weekdays = tuple(ISO_WDAY[day] for day in sched['days'])
     start_time = time(hour=sched['hours'][0] + 7)
     end_time = time(hour=sched['hours'][-1] + 7, minute=50)
-    start_date = calc_start_date(weekdays, end_time < dt.now().time())
+    start_date = calc_start_date(weekdays)
     return {
         'room': sched['room'],
         'start': combine_dt(start_date, start_time),

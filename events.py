@@ -1,9 +1,9 @@
 from collections import defaultdict
 from datetime import date, timedelta
-from functools import lru_cache, partial
+from functools import partial
 from itertools import chain
 
-from utils import combine_dt, config, cur_sem
+from utils import combine_dt, config, sem_last_date
 
 DATE_FMT = '%Y%m%dT%H%M%S'
 RFC_WDAY = ('MO', 'TU', 'WE', 'TH', 'FR', 'SA')
@@ -23,15 +23,7 @@ for change_date, day in config['DATES'].get('day_change', {}).items():
     change_date = date.fromisoformat(change_date)
     INCLUDE_DATES[day].append(change_date)
 CHANGE_DATES = tuple(chain.from_iterable(INCLUDE_DATES.values()))
-
-
-@lru_cache()
-def get_last_date():
-    default_last_date = date(date.today().year, 11 if cur_sem() == 1 else 4, 29)
-    last_date = config['DATES'].get('last_date', default_last_date) + timedelta(days=1)
-    if last_date < date.today():
-        last_date = default_last_date
-    return last_date.strftime('%Y%m%d')
+LAST_DATE = (sem_last_date + timedelta(days=1)).strftime('%Y%m%d')
 
 
 def join_event_dt(event, date):
@@ -65,7 +57,7 @@ def make_section_events(course_name, section):
         rrule = {
             'FREQ': 'WEEKLY',
             'BYDAY': ','.join(RFC_WDAY[day - 1] for day in event['wdays']),
-            'UNTIL': get_last_date()
+            'UNTIL': LAST_DATE
         }
         get_dt = partial(join_event_dt, event)
         indates = get_indates(event)
