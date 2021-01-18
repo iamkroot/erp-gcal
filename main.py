@@ -2,10 +2,11 @@ import argparse
 
 import cms
 import erp
+from dates import cur_sem, today
 from events import make_course_events
 from gcal import GCal, tools
 from timetable import get_course
-from utils import config, get_cal_name
+from utils import config
 
 
 def override_sections(sections):
@@ -50,6 +51,11 @@ def set_cal(gcal: GCal, cal_name):
     if gcal.set_cal(cal_name):
         print("Calendar", cal_name, "already exists. Clearing old events.")
         gcal.clear_cal()
+
+
+def get_cal_name():
+    acad_year = today.year - cur_sem + 1
+    return f"Timetable Sem {cur_sem}, {acad_year}-{acad_year + 1 - 2000}"
 
 
 def main():

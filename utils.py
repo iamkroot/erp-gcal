@@ -41,10 +41,10 @@ def write_json(file, data):
         json.dump(data, f, indent=4)
 
 
-@lru_cache()
-def get_weekday(isoweekday):
-    today = date.today()
-    return today - timedelta(days=today.weekday() + isoweekday - 1)
+# @lru_cache()
+# def get_weekday(isoweekday) -> date:
+#     today = date.today()
+#     return today - timedelta(days=today.weekday() + isoweekday - 1)
 
 
 class IST(tzinfo):
@@ -132,40 +132,7 @@ def find_entity(entity, entities, fields, thresh=0.8):
     return best_match
 
 
-@lru_cache()
-def calc_cur_sem():
-    return 2 if 1 <= date.today().month <= 5 else 1
-
-
 @lru_cache
-def calc_sem_start_date():
-    """Get first monday of the sem"""
-    if start_date := config['DATES'].get("sem", {}).get("start"):
-        return start_date
-
-    today = date.today()
-    if cur_sem == 1:
-        start = today.replace(month=8, day=1)
-        monday = start + timedelta((7 - start.weekday()) % 7)  # First week of Aug
-    else:
-        start = today.replace(month=1, day=1)
-        monday = start + timedelta(7 - start.weekday())  # Second week of Jan
-    return monday
-
-
-@lru_cache
-def calc_sem_last_date():
-    if last_date := config['DATES'].get("sem", {}).get("last"):
-        return last_date
-    return date(date.today().year, 11 if cur_sem == 1 else 4, 29)
-
-
-@lru_cache
-def get_cal_name():
-    acad_year = date.today().year - cur_sem + 1
-    return f"Timetable Sem {cur_sem}, {acad_year}-{acad_year + 1 - 2000}"
-
-
-cur_sem = calc_cur_sem()
-sem_start_date = calc_sem_start_date()
-sem_last_date = calc_sem_last_date()
+def get_weekday(weekday=0, date_=date.today(), future_date=False) -> date:
+    value = date_ + timedelta(weekday - date_.weekday() % 7)
+    return value + timedelta(7 * (future_date and date_ == value))

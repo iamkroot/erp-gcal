@@ -37,7 +37,7 @@ def post_form(src, **kwargs):
     return sess.post(form_url, payload)
 
 
-def get_weekly_sched(start_date=get_weekday(1)):
+def get_weekly_sched(start_date=get_weekday(0)):
     url = (ROOT_URL + '/psc/hcsprod/EMPLOYEE/HRMS/c/'
            'SA_LEARNER_SERVICES.SSR_SSENRL_SCHD_W.GBL')
     r = sess.get(url)

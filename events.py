@@ -1,33 +1,24 @@
 from collections import defaultdict
-from datetime import date, timedelta
+from datetime import timedelta as td
 from functools import partial
-from itertools import chain
 
-from utils import combine_dt, config, sem_last_date
+from dates import (RFC_WEEKDAYS, last_workday, day_changes as CHANGE_DATES,
+                   midsem_dates as MIDSEM_DATES, holidays as HOLIDAYS)
+from utils import combine_dt
 
 DATE_FMT = '%Y%m%dT%H%M%S'
-RFC_WDAY = ('MO', 'TU', 'WE', 'TH', 'FR', 'SA')
+RFC_WDAY = tuple(RFC_WEEKDAYS.values())
 COLORS = {'event': {'L': '9', 'P': '6', 'T': '10'},
           'midsem': '4', 'compre': '7'}
 
-MIDSEM_DATES = config['DATES'].get("midsem")
-if MIDSEM_DATES:
-    assert isinstance(MIDSEM_DATES["start"], date)
-    assert MIDSEM_DATES["start"] >= date.today(), "Midsem start date is in the past"
-
-HOLIDAYS = set(config['DATES'].get('holidays', []))
-
 INCLUDE_DATES = defaultdict(list)
-for change_date, day in config['DATES'].get('day_change', {}).items():
-    assert day in RFC_WDAY, f"Invalid day '{day}' in 'day_change' config"
-    change_date = date.fromisoformat(change_date)
+for change_date, day in CHANGE_DATES.items():
     INCLUDE_DATES[day].append(change_date)
-CHANGE_DATES = tuple(chain.from_iterable(INCLUDE_DATES.values()))
-LAST_DATE = (sem_last_date + timedelta(days=1)).strftime('%Y%m%d')
+LAST_DATE = (last_workday + td(days=1)).strftime('%Y%m%d')
 
 
-def join_event_dt(event, date):
-    return combine_dt(date, event['start'].time()).strftime(DATE_FMT)
+def join_event_dt(event, date_):
+    return combine_dt(date_, event['start'].time()).strftime(DATE_FMT)
 
 
 def get_indates(event):
@@ -45,7 +36,7 @@ def get_exdates(event, indates):
         while midsem_date <= MIDSEM_DATES['end']:
             if midsem_date.isoweekday() in event['wdays']:
                 exdates.add(midsem_date)
-            midsem_date = midsem_date + timedelta(days=1)
+            midsem_date = midsem_date + td(days=1)
     for change_date in CHANGE_DATES:
         if change_date.isoweekday() in event['wdays'] and change_date not in indates:
             exdates.add(change_date)

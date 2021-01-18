@@ -3,9 +3,9 @@ import re
 from collections import defaultdict
 from datetime import date, datetime, timedelta as td
 from difflib import SequenceMatcher, get_close_matches
-from pathlib import Path
+from functools import lru_cache
 from typing import Iterable
-from utils import config, take
+from utils import config, take, get_weekday
 
 REGEX = re.compile(r"""
     (?P<month>[A-Za-z]{3,20})?\s*
@@ -23,14 +23,18 @@ RFC_WEEKDAYS = {
     "Saturday": 'SA',
     "Sunday": 'SU'
 }
-today = date.today().replace(year=2019)
+DAY_CHANGE_STR = "timetable to be followed"
+WORK_START_STR = "Class work begins"
+WORK_LAST_STR = "Last day for class work"
+MIDSEM_STR = "Mid‐semester Test (Classwork Suspended)"
+today = date.today()
 
 
 class InvalidDateError(ValueError):
     pass
 
 
-def match_wday(dd: date, wday: int) -> date:
+def _match_wday(dd: date, wday: int) -> date:
     """Try changing year/month from dd to make it match Weekday"""
     if dd.weekday() == wday:  # weekday is correct
         return dd
@@ -61,7 +65,7 @@ def match_wday(dd: date, wday: int) -> date:
     raise InvalidDateError("Unable to match with weekday")
 
 
-def parse_date_str(date_str: str) -> tuple[date]:
+def _parse_date_str(date_str: str) -> tuple[date]:
     """Parse the dates from events table.
     Eg:
     Simple date: 'January 12 (T)'
@@ -71,7 +75,7 @@ def parse_date_str(date_str: str) -> tuple[date]:
     Wrong input for year 2021: 'April 25 (S)'
     """
 
-    # if the date range goes over this limit, we made an error in match_wday
+    # if the date range goes over this limit, we made an error in _match_wday
     MAX_DELTA = td(weeks=12)
 
     dates = []
@@ -88,19 +92,19 @@ def parse_date_str(date_str: str) -> tuple[date]:
               .replace(year=today.year)
               .date())
         try:
-            dd = match_wday(dd, wday)
+            dd = _match_wday(dd, wday)
         except InvalidDateError:
             if match['wday'] == 'S':
                 try:
                     # try matching with Sunday
-                    dd = match_wday(dd, wday + 1)
+                    dd = _match_wday(dd, wday + 1)
                 except InvalidDateError:
                     raise InvalidDateError(date_str)
             else:
                 raise InvalidDateError(date_str)
         # Ensure that the dates are not too far apart
         if dates and not (-MAX_DELTA < dates[-1] - dd < MAX_DELTA):
-            # Maybe we made a mistake in match_wday
+            # Maybe we made a mistake in _match_wday
             raise InvalidDateError(date_str)
         dates.append(dd)
     if not dates:
@@ -130,23 +134,23 @@ def parse_file(events_rows) -> dict:
                 break
             if not date_str:
                 continue
-            events[parse_date_str(date_str)].append(name)
+            events[_parse_date_str(date_str)].append(name)
     return events
 
 
-def get_holidays(events: dict) -> Iterable[date]:
+def parse_holidays(events: dict) -> Iterable[date]:
     for dates, names in events.items():
         if any(name.endswith("(H)") for name in names):
             yield from dates
 
 
-def get_day_changes(events: dict) -> dict[date, str]:
+def parse_day_changes(events: dict) -> dict[date, str]:
     """Get map of timetable day overrides (X-day's timetable to be followed)"""
     changes = {}
-    matcher = SequenceMatcher(lambda x: x == ' ', "", "timetable to be followed")
+    matcher = SequenceMatcher(lambda x: x == ' ', "", DAY_CHANGE_STR)
     for dates, names in events.items():
         for name in names:
-            matcher.set_seq1(name)
+            matcher.set_seq1(name.lower())
             if matcher.ratio() > 0.8:
                 for block in matcher.matching_blocks:
                     if block.size < 5:
@@ -158,10 +162,89 @@ def get_day_changes(events: dict) -> dict[date, str]:
     return changes
 
 
-if __name__ == '__main__':
-    dates_file = Path(config["DATES"]["dates_file"])
-    with open(dates_file) as f:
+def find_event_date(events: dict, name: str, thresh=0.8) -> tuple[date]:
+    """Search the event names for the matching name"""
+    matcher = SequenceMatcher(lambda x: x == ' ' or x == '-', "", name.lower())
+    for dates, names in events.items():
+        for name in names:
+            matcher.set_seq1(name.lower())
+            if matcher.ratio() > thresh:
+                return dates
+
+
+@lru_cache
+def calc_sem_start_date():
+    """Get first monday of the sem"""
+
+    if cur_sem == 1:
+        start = today.replace(month=8, day=1)
+        return get_weekday(0, start)  # First week of Aug
+    else:
+        start = today.replace(month=1, day=1)
+        return get_weekday(0, start, future_date=True)  # Second week of Jan
+
+
+@lru_cache
+def calc_sem_last_date():
+    return date(today.year, 11 if cur_sem == 1 else 4, 29)
+
+
+def get_first_workday(events: dict = {}) -> date:
+    """Get date when classwork begins"""
+    if start_date := config['DATES'].get("classwork", {}).get("start"):
+        assert isinstance(start_date, date)
+    elif dates := find_event_date(events, WORK_START_STR):
+        start_date = dates[0]
+    else:
+        start_date = calc_sem_start_date()
+    assert start_date - today <= td(180), "Classwork start date is too old"
+    return start_date
+
+
+def get_last_workday(events: dict = {}) -> date:
+    """Last working day of the sem"""
+    if end_date := config['DATES'].get("classwork", {}).get("end"):
+        assert isinstance(end_date, date)
+    elif dates := find_event_date(events, WORK_LAST_STR):
+        end_date = dates[0]
+    else:
+        end_date = calc_sem_last_date()
+    assert end_date >= today, "Classwork end date is in the past"
+    return end_date
+
+
+def get_midsem_dates(events: dict = {}) -> dict[str, date]:
+    if midsem := config['DATES'].get("midsem"):
+        assert isinstance(midsem["start"], date)
+    elif events:
+        dates = find_event_date(events, MIDSEM_STR)
+        midsem = {"start": dates[0], "end": dates[1]}
+    else:
+        return None
+    assert midsem["start"] >= today, "Midsem start date is in the past"
+    return midsem
+
+
+def get_day_changes(events: dict = {}) -> dict[date, str]:
+    day_change_ = config['DATES'].get('day_change') or parse_day_changes(events)
+    day_changes = {}
+    for change_date, day in day_change_.items():
+        assert day in RFC_WEEKDAYS.values(), f"Invalid day={day} in 'day_change' config"
+        if not isinstance(change_date, date):
+            change_date = date.fromisoformat(change_date)
+        day_changes[change_date] = day
+    return day_changes
+
+
+cur_sem = 1 + (1 <= today.month <= 5)
+if events_file := config["DATES"].get("events_file"):
+    with open(events_file) as f:
         events = parse_file(f)
-    print(events)
-    print(*get_holidays(events))
-    a = get_day_changes(events)
+else:
+    events = {}
+
+first_workday = get_first_workday(events)
+last_workday = get_last_workday(events)
+midsem_dates = get_midsem_dates(events)
+holidays = set(config['DATES'].get('holidays') or parse_holidays(events))
+day_changes = get_day_changes(events)
