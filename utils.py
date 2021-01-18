@@ -60,6 +60,10 @@ def combine_dt(date_, time_=time(0, 0), tz=IST):
     return datetime.combine(date_, time_, tz())
 
 
+def take(n, iterable):
+    return (val for _, val in zip(range(n), iterable))
+
+
 def retry_on_conn_error(func):
     def wrapper(*args, **kwargs):
         for _ in range(5):
@@ -136,6 +140,9 @@ def calc_cur_sem():
 @lru_cache
 def calc_sem_start_date():
     """Get first monday of the sem"""
+    if start_date := config['DATES'].get("sem", {}).get("start"):
+        return start_date
+
     today = date.today()
     if cur_sem == 1:
         start = today.replace(month=8, day=1)
@@ -148,6 +155,8 @@ def calc_sem_start_date():
 
 @lru_cache
 def calc_sem_last_date():
+    if last_date := config['DATES'].get("sem", {}).get("last"):
+        return last_date
     return date(date.today().year, 11 if cur_sem == 1 else 4, 29)
 
 

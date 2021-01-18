@@ -12,8 +12,11 @@ address = "https://td.bits-hyderabad.ac.in/moodle"
 wstoken = "368b0c8b11dce69420ca42ef45bdd1dc"  # Copy Moodle Mobile Web Service Key from Preferences -> Security Keys
 
 [DATES]  # this section needs to be manually updated from Timetable every sem
+dates_file = "path/to/calendar.tsv"  # should be extacted from academic calendar table
 midsem.start = 2020-03-02  # should be official date, to ensure correct holidays
 midsem.end = 2020-03-07
+sem.start = 2021-01-18
+sem.end = 2021-04-29
 holidays = [2020-01-15, 2020-01-26, 2020-01-29, 2020-03-10, 2020-03-20, 2020-03-21, 2020-03-25, 2020-04-02, 2020-04-06, 2020-04-10]
 day_change = {2020-02-29 = "FR", 2020-03-19 = "SA", 2020-03-31 = "MO"}
 # means, Friday's timetable will be followed on 29 Feb, Saturday's timetable on 19th Mar, etc.
