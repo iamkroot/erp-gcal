@@ -4,18 +4,19 @@ from datetime import date, time, timedelta as td
 from functools import partial
 
 from parse_excel import course_db
-from utils import combine_dt, sem_start_date
+from utils import combine_dt
+from dates import first_workday
 
 ISO_WDAY = {d: i for i, d in enumerate(('M', 'T', 'W', 'Th', 'F', 'S'), 1)}
 MIDSEM_PAT = re.compile(r'(\d{1,2})\.(\d{2})\s*-+\s*(\d{1,2})\.(\d{2})\s*(\w{2})')
 
 
 def calc_start_date(wdays):
-    start_day = sem_start_date.isoweekday()
+    start_day = first_workday.isoweekday()
     if start_day in wdays:
-        return sem_start_date
+        return first_workday
     lower = bisect.bisect(wdays, start_day)
-    return sem_start_date + td(
+    return first_workday + td(
         days=wdays[lower % len(wdays)] - start_day,
         weeks=(lower == len(wdays))
     )
