@@ -9,6 +9,7 @@ def iter_rows(wb, column_map):
     for sheet in wb:
         rows = sheet.rows
         next(rows)
+        next(rows)
         for row in rows:
             if not row:
                 continue
@@ -21,10 +22,10 @@ def parse_main_tt(file_path: Path):
         "c_title": 2,
         "sec_num": 6,
         "instr_name": 7,
-        "room": 8,
-        "days": 9,
-        "hours": 10,
-        "compre": 12,
+        "days": 8,
+        "hours": 9,
+        "midsem": 10,
+        "compre": 11,
     }
     workbook = load_workbook(file_path, read_only=True)
     course_db = {}
@@ -52,7 +53,7 @@ def parse_main_tt(file_path: Path):
         # new Section
         if (
             data["instr_name"]
-            and data["room"]
+            and data.get("room", True)
             and not sec_type == "L"
             or data["sec_num"]
         ) or data["c_title"]:
@@ -65,9 +66,14 @@ def parse_main_tt(file_path: Path):
         if isinstance(data.get("hours"), (float, int)):
             data["hours"] = str(int(data["hours"]))
         if data.get("days"):
-            hours = tuple(map(int, data["hours"].split()))
+            hours = []
+            for hour in map(int, data["hours"].split()):
+                if hour > 15:
+                    hours.extend(map(int, str(hour)))
+                else:
+                    hours.append(hour)
             days = data["days"].split()
-            sched = {"room": data["room"], "days": days}
+            sched = {"room": data.get("room", ""), "days": days}
             if len(hours) == hours[-1] - hours[0] + 1:  # continuous hours
                 section["sched"].append(dict(**sched, hours=hours))
             else:
@@ -96,7 +102,7 @@ def parse_midsem(file_path: Path):
 
 def parse_files(tt_file: Path, midsem_file: Path):
     timetable = parse_main_tt(tt_file)
-    if midsem_file.exists():
+    if midsem_file.is_file():
         midsem = parse_midsem(midsem_file)
         for k, v in midsem.items():
             timetable[k]["midsem"] = v
@@ -107,7 +113,7 @@ def parse_files(tt_file: Path, midsem_file: Path):
 
 class CourseDB:
     tt_file = Path(config["COURSES"]["tt_file"])
-    midsem_file = Path(config["COURSES"]["midsem_file"])
+    midsem_file = Path(config["COURSES"].get("midsem_file", ""))
     _course_db = None
     _timetable = None
 
