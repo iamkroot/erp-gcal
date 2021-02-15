@@ -5,6 +5,15 @@ from functools import partial
 from dates import (RFC_WEEKDAYS, last_workday, day_changes as CHANGE_DATES,
                    midsem_dates as MIDSEM_DATES, holidays as HOLIDAYS)
 from utils import combine_dt
+from enum import Flag, auto
+
+
+class EventType(Flag):
+    Lectures = auto()
+    Midsem = auto()
+    Compre = auto()
+    All = Lectures | Midsem | Compre
+
 
 DATE_FMT = '%Y%m%dT%H%M%S'
 RFC_WDAY = tuple(RFC_WEEKDAYS.values())
@@ -114,13 +123,16 @@ def make_compre_event(course_name, compre):
                       compre['end'], COLORS['compre'])
 
 
-def make_course_events(course):
+def make_course_events(course, event_types=EventType.All):
     name = course['name']
-    for section in course['sections']:
-        yield from make_section_events(name, section)
-    midsem = course.get('midsem')
-    if midsem:
-        yield make_midsem_event(name, midsem)
-    compre = course.get('compre')
-    if compre:
-        yield make_compre_event(name, compre)
+    if event_types & EventType.Lectures:
+        for section in course['sections']:
+            yield from make_section_events(name, section)
+    if event_types & EventType.Midsem:
+        midsem = course.get('midsem')
+        if midsem:
+            yield make_midsem_event(name, midsem)
+    if event_types & EventType.Compre:
+        compre = course.get('compre')
+        if compre:
+            yield make_compre_event(name, compre)

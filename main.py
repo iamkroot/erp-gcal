@@ -1,9 +1,11 @@
 import argparse
+from functools import reduce
+from operator import ior
 
 import cms
 import erp
 from dates import cur_sem, today
-from events import make_course_events
+from events import make_course_events, EventType
 from gcal import GCal, tools
 from timetable import get_course
 from utils import config
@@ -46,9 +48,9 @@ def enrol_cms(course_code, sections):
             print(resp)
 
 
-def set_cal(gcal: GCal, cal_name):
+def set_cal(gcal: GCal, cal_name, clear_old=True):
     print("Creating calendar for", cal_name)
-    if gcal.set_cal(cal_name):
+    if gcal.set_cal(cal_name) and clear_old:
         print("Calendar", cal_name, "already exists. Clearing old events.")
         gcal.clear_cal()
 
@@ -70,6 +72,14 @@ def main():
         '-t', '--title',
         default=get_cal_name(),
         help="Name of the calendar")
+    parser.add_argument(
+        '--no-clear-old',
+        action='store_true', default=False,
+        help="Don't delete the calendar if it exists")
+    parser.add_argument(
+        '--events',
+        nargs='+', default='all',
+        choices=list(EventType.__members__.keys()))
     cms_group = parser.add_mutually_exclusive_group()
     cms_group.add_argument(
         '-s', '--skip-cms',
@@ -80,6 +90,7 @@ def main():
         action='store_true', default=False,
         help="Only enrol to CMS courses")
     args = parser.parse_args()
+    args.events = reduce(ior, (getattr(EventType, event) for event in args.events))
 
     if not args.only_cms:
         gcal = GCal(args.new_creds)
@@ -94,7 +105,7 @@ def main():
         if not args.skip_cms:
             enrol_cms(course_code, sections)
         if not args.only_cms:
-            for event in make_course_events(course):
+            for event in make_course_events(course, args.events):
                 gcal.create_event(event)
                 gcal.print_event(event, "Created", "in GCal.")
 

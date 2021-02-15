@@ -41,6 +41,9 @@ def parse_main_tt(file_path: Path):
             if data["compre"]:
                 date, sess = data["compre"].split()
                 course["compre"] = {"date": date, "session": sess}
+            if data["midsem"]:
+                date, time = data["midsem"].split("\n")
+                course["midsem"] = {"date": date.strip(), "time": time.strip()}
             course_db[data["c_num"]] = course  # add to course
             sec_type = "L"
             sec_num_counter = 1

@@ -8,7 +8,7 @@ from utils import combine_dt
 from dates import first_workday
 
 ISO_WDAY = {d: i for i, d in enumerate(('M', 'T', 'W', 'Th', 'F', 'S'), 1)}
-MIDSEM_PAT = re.compile(r'(\d{1,2})\.(\d{2})\s*-+\s*(\d{1,2})\.(\d{2})\s*(\w{2})')
+MIDSEM_PAT = re.compile(r'(\d{1,2})\.(\d{1,2})\s*-+\s*(\d{1,2})\.(\d{1,2})\s*(\w{2})')
 
 
 def calc_start_date(wdays):
